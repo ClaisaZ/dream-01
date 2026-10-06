@@ -53,15 +53,15 @@ Everyone acts once per round. Faster characters go first, but some moves jump th
 |---|---|
 | Quick attack | Weaker, but goes early |
 | Power attack | Stronger, but goes late |
-| Special attack | Big hit. Needs a full skill meter |
+| Special attack | Big hit, goes early. Needs a full skill meter |
 | Item | Use a potion. Goes first of all |
 | Defend | Take less damage until your next turn |
 
 There's no running away: every battle is part of the story.
 
-- **Skill meter:** fills as you attack, get hit, or help a friend. When full, the special attack unlocks. Empty at the start of every battle.
+- **Skill meter:** fills as you attack, get hit (double on a critical hit), or help a friend. When full, the special attack unlocks. Empty at the start of every battle. Elite enemies and bosses have one too.
 - **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down. Each lasts a few turns.
-- **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt.
+- **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely.
 - **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
 - **Items:** HP potion (heals 30%), meter boost, and rare potions that raise a stat forever.
@@ -113,6 +113,7 @@ The party is waiting on Rachel's character list, so start with style tests. Size
 - [ ] Quick attack, power attack, and special attack
 - [ ] Tag-team attacks with each partner (pairs unlock through the story)
 - [ ] Shared effects: hit flash, critical hit, heal sparkle, buff and debuff
+- [ ] Lightning effect when a character's skill meter is full
 - [ ] Defend
 - [ ] Getting hit
 - [ ] Victory pose after winning a battle: `sprite_<name>_victory.png`
@@ -185,7 +186,7 @@ Music is `.ogg`, sound effects are `.wav`.
 **Battles:**
 
 - [x] Basic battle: rounds, turn order, quick and power attacks, win or lose
-- [ ] Skill meter and special attacks
+- [x] Skill meter and special attacks
 - [ ] Defend and items
 - [ ] Status effects and critical hits
 - [ ] Tag-team attacks
@@ -221,6 +222,10 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Smarter enemy choices (right now enemies pick a random move and target)
 - [ ] Keyboard and controller controls in battle (right now mouse only)
 - [ ] Retune the pause between battle actions once attack animations exist
+- [ ] Critical hits double the meter gained from getting hit; enemies get a very low crit chance
+- [ ] Elite enemies: a skill meter and a special that hits for about 1.3x damage
+- [ ] Bosses: a meter and their own unique special attack
+- [ ] Meter full: lightning effect, and move the meter bar next to the character portrait
 
 **Not assigned yet (art):**
 

@@ -7,4 +7,5 @@ script = ExtResource("1_skill")
 display_name = "Special Attack"
 description = "A powerful move. Needs a full skill meter."
 power = 2.0
+priority = 1
 requires_full_meter = true

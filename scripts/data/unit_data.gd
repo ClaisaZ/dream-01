@@ -20,6 +20,11 @@ extends Resource
 ## Base crit chance (0.05 = 5%). Hidden from the player; rises as HP drops.
 @export_range(0.0, 1.0, 0.01) var base_crit_chance: float = 0.05
 
+@export_group("Skill Meter")
+## On for party members, elites, and bosses. Basic enemies leave it off
+## (no meter, so they never use a special attack).
+@export var has_skill_meter: bool = false
+
 @export_group("Moves")
 @export var quick_attack: SkillData
 @export var power_attack: SkillData

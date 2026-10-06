@@ -10,7 +10,7 @@ const PARTY: Array[UnitData] = [
 	preload("res://data/units/test_hero.tres"),
 	preload("res://data/units/test_hero.tres"),
 ]
-const ENEMY_GROUP: EnemyGroup = preload("res://data/enemy_groups/test_slimes.tres")
+const ENEMY_GROUP: EnemyGroup = preload("res://data/enemy_groups/test_golem_and_slimes.tres")
 const TITLE_SCENE: String = "res://scenes/menus/title_screen.tscn"
 ## Retune once attack animations exist; they'll add their own time.
 const ACTION_DELAY: float = 0.8
@@ -23,6 +23,7 @@ var _chosen_skill: SkillData
 var _message: Label
 var _quick_button: Button
 var _power_button: Button
+var _special_button: Button
 var _restart_button: Button
 var _title_button: Button
 
@@ -77,8 +78,9 @@ func _build_layout() -> void:
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.custom_minimum_size.y = 56
 	rows.add_child(buttons)
-	_quick_button = _make_button("Quick Attack", buttons, _on_skill_pressed.bind(true))
-	_power_button = _make_button("Power Attack", buttons, _on_skill_pressed.bind(false))
+	_quick_button = _make_button("Quick Attack", buttons, _on_skill_pressed.bind(&"quick_attack"))
+	_power_button = _make_button("Power Attack", buttons, _on_skill_pressed.bind(&"power_attack"))
+	_special_button = _make_button("Special Attack", buttons, _on_skill_pressed.bind(&"special_attack"))
 	_restart_button = _make_button("Play Again", buttons, get_tree().reload_current_scene)
 	_title_button = _make_button("Title Screen", buttons, get_tree().change_scene_to_file.bind(TITLE_SCENE))
 	_restart_button.hide()
@@ -128,8 +130,9 @@ func _on_party_turn_started(unit: BattleUnit) -> void:
 	_set_targets_enabled(false)
 
 
-func _on_skill_pressed(quick: bool) -> void:
-	_chosen_skill = _active_unit.data.quick_attack if quick else _active_unit.data.power_attack
+## slot is the UnitData property holding the skill: quick_attack, power_attack, or special_attack.
+func _on_skill_pressed(slot: StringName) -> void:
+	_chosen_skill = _active_unit.data.get(slot)
 	_message.text = "%s: %s. Click an enemy" % [_active_unit.display_name, _chosen_skill.display_name]
 	_set_targets_enabled(true)
 
@@ -145,9 +148,12 @@ func _on_enemy_pressed(target: BattleUnit) -> void:
 	_battle.submit_action(user, _chosen_skill, target)
 
 
+## Special stays grayed out until the active party member's meter is full.
 func _set_attack_buttons_enabled(enabled: bool) -> void:
 	_quick_button.disabled = not enabled
 	_power_button.disabled = not enabled
+	_special_button.disabled = not (enabled and _active_unit != null
+			and _active_unit.can_use(_active_unit.data.special_attack))
 
 
 func _set_targets_enabled(enabled: bool) -> void:
@@ -174,5 +180,6 @@ func _on_battle_ended(party_won: bool) -> void:
 	_set_attack_buttons_enabled(false)
 	_quick_button.hide()
 	_power_button.hide()
+	_special_button.hide()
 	_restart_button.show()
 	_title_button.show()

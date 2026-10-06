@@ -71,6 +71,8 @@ Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_fores
 
 **Party:** 3 members in battle (for now, testing uses 3 copies of Test Hero).
 
+**Special priority:** party specials are +1 so a saved-up special lands on the chosen target instead of being redirected. Each enemy special sets its own priority (elites likely 0; boss timing is handled by wind-ups).
+
 **Battle screen:** side view, party on the left, enemies on the right. Mouse only for now (click an attack, then click an enemy); keyboard/controller later. Layout stretches to any window size until the base resolution is decided.
 
 **Actions:** Quick attack, Power attack, Special attack (only when skill meter is full), Item, Defend. **No fleeing**: every battle is part of the story.
@@ -78,7 +80,7 @@ Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_fores
 | | Quick attack | Power attack | Special attack |
 |---|---|---|---|
 | Power (starting) | 0.8 | 1.3 | 2.0 |
-| Priority | +1 | -1 | 0 |
+| Priority | +1 | -1 | +1 |
 | Skill meter | fills a little | fills more | needs full meter, empties it |
 
 **Damage formula:**
@@ -87,11 +89,11 @@ damage = power × ATK × ATK ÷ (ATK + DEF)    # rounded, minimum 1
 ```
 Magic skills use MAG instead of ATK. (A separate magic defense may be added later.) No random variance for now; a high/low roll is an open idea for later.
 
-**Skill meter:** one per character, 0–100. Resets to empty every battle. Starting gains (to tune): quick attack +10, power attack +20. Fills from attacking, taking damage, and supporting allies (heals, buffs); Defend fills it only a little.
+**Skill meter:** one per character, 0–100. Resets to empty every battle. Starting gains (to tune): quick attack +10, power attack +20, getting hit +5 (×2 = +10 on a crit). Fills from attacking, taking damage, and supporting allies (heals, buffs); Defend fills it only a little. Battle-wide numbers like these live in `data/battle_rules.tres` (`BattleRules`), not in code. Party members, elites, and bosses have meters (`UnitData.has_skill_meter`); basic enemies don't. Elite specials hit for about 1.3× damage; each boss gets its own unique special. Enemies with a full meter use their special. UI: Special button always visible, grayed out until full; "meter full" gets a lightning effect later; meter bar sits in the unit box for now, beside the portrait later.
 
 **Defend:** raises the character's DEF until their next turn (exact boost tuned in testing).
 
-**Crits:** hidden from the player. Each character has a small base crit chance that rises as their HP drops. Crits deal ×1.5 damage and make tag-teams more likely.
+**Crits:** hidden from the player. Each character has a small base crit chance that rises as their HP drops. Enemies can crit too, with a very low chance. Crits deal ×1.5 damage and make tag-teams more likely.
 
 **Tag-team attacks:** when two party members hit the same enemy in the same round, they can link into a tag-team attack. Each pair's tag-team is **unlocked by story events**, not available from the start. Trigger chance rises on crits, when the attacker is low on HP, or when the enemy is low on HP. (Exact rules to be tuned in the prototype.)
 
@@ -103,7 +105,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Bosses:** immune to stun, not to debuffs. Phases at HP thresholds (more attacks per round, stronger attacks, and/or party debuffs). Wind-up attacks telegraphed one round ahead. Battle dialogue via short Dialogic timelines on phase changes and reactions. Each phase is data on the boss, not new code.
 
-**Items:** HP potion, skill meter boost, and permanent stat potions (ATK, DEF, SPD, MAG) that are rare rewards, not sold in shops. HP potion heals 30% of max HP (in and out of battle). Meter boost +50 (battle only, since the meter resets each battle). Stat potions +1, outside battle only. Using an item takes the character's turn at priority +2 (before quick attacks). Prices are placeholders until the economy is designed.
+**Items:** HP potion, skill meter boost, and permanent stat potions (ATK, DEF, SPD, MAG) that are rare rewards, not sold in shops. HP potion heals 30% of max HP (in and out of battle). Meter boost +50 (battle only, since the meter resets each battle). Stat potions +1, outside battle only. Using an item takes the character's turn at priority +2 (before quick attacks and specials). Prices are placeholders until the economy is designed.
 
 **Equipment:** one weapon and one armor set per character. Each piece fits one character only, so each character upgrades in a straight line. Flat stat bonuses (weapons: ATK/MAG, sometimes SPD; armor: DEF/HP). Each boss beaten unlocks the next tier in the shop. The gear line lives on the character (`UnitData.weapons` / `armors`, index = tier) so gear never points back to its owner (avoids cyclic resources). Gear with special effects (crit, meter gain...) is a maybe-later; probably out of scope for a game this size.
 
@@ -140,5 +142,6 @@ Each step should leave the game playable.
 - `Equipment` script plus test gear (tiers 0–1) in `data/equipment/`, linked from `test_hero.tres`.
 - `feature/battle-data` merged into `dev` (PR #2).
 - `EnemyGroup` script, `data/enemies/test_slime.tres`, `data/enemy_groups/test_slimes.tres`; `feature/enemy-group` merged into `dev` (PR #4). Build step 1 (data Resources) done.
-- Working on `feature/basic-battle` (build step 2). Done: 2a, 2b, 2c (`scenes/battle/battle_screen.tscn`), 2d (`scenes/menus/title_screen.tscn`, the main scene). Pieces: 2a BattleUnit + damage formula (test scene printing results), 2b battle logic as text (rounds, turn order, win/lose, both sides automatic), 2c gray-box battle screen (HP bars, Quick/Power buttons, targeting), 2d bare title screen with Start.
+- Build step 2 done: `BattleUnit`, `Battle`, gray-box battle screen (`scenes/battle/battle_screen.tscn`), bare title screen (`scenes/menus/title_screen.tscn`, the main scene). Merged into `dev` (PR #5).
+- Working on `feature/skill-meter` (build step 3, first extra): skill meter + special attack.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

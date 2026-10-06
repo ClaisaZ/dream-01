@@ -14,6 +14,7 @@
 [resource]
 script = ExtResource("1_unit")
 display_name = "Test Hero"
+has_skill_meter = true
 quick_attack = ExtResource("2_quick")
 power_attack = ExtResource("3_power")
 special_attack = ExtResource("4_special")
