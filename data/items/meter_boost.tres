@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Item" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+display_name = "Meter Boost"
+description = "Fills the skill meter by 50."
+effect = 1
+amount = 50
+usable_outside_battle = false
+price = 100
