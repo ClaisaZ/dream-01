@@ -7,6 +7,7 @@ extends RefCounted
 signal hp_changed(unit: BattleUnit, current_hp: int, max_hp: int)
 signal died(unit: BattleUnit)
 signal meter_changed(unit: BattleUnit, meter: int, meter_max: int)
+signal defending_changed(unit: BattleUnit, defending: bool)
 
 var data: UnitData
 ## Shown in battle, e.g. "Test Slime B" when the same enemy appears more than once.
@@ -24,6 +25,10 @@ var mag: int
 var has_meter: bool
 var meter: int = 0
 var meter_max: int = 100
+
+## While defending, DEF counts as def × defend_multiplier (set by Battle).
+var defending: bool = false
+var defend_multiplier: float = 1.5
 
 
 func _init(unit_data: UnitData, on_party: bool, name_suffix: String = "") -> void:
@@ -68,6 +73,18 @@ func add_meter(amount: int) -> void:
 	meter_changed.emit(self, meter, meter_max)
 
 
+func set_defending(value: bool) -> void:
+	if defending == value:
+		return
+	defending = value
+	defending_changed.emit(self, defending)
+
+
+## DEF used when this unit is hit (boosted while defending).
+func effective_def() -> int:
+	return roundi(def * defend_multiplier) if defending else def
+
+
 func empty_meter() -> void:
 	if not has_meter:
 		return
@@ -88,7 +105,7 @@ func take_damage(amount: int) -> int:
 ## How much damage this unit's skill would deal to the target.
 func damage_against(target: BattleUnit, skill: SkillData) -> int:
 	var attack_stat: int = mag if skill.damage_type == SkillData.DamageType.MAGIC else atk
-	return calculate_damage(skill.power, attack_stat, target.def)
+	return calculate_damage(skill.power, attack_stat, target.effective_def())
 
 
 ## damage = power × ATK × ATK ÷ (ATK + DEF), rounded, minimum 1.

@@ -55,7 +55,7 @@ Everyone acts once per round. Faster characters go first, but some moves jump th
 | Power attack | Stronger, but goes late |
 | Special attack | Big hit, goes early. Needs a full skill meter |
 | Item | Use a potion. Goes first of all |
-| Defend | Take less damage until your next turn |
+| Defend | Take less damage for the rest of the round. Goes right after items |
 
 There's no running away: every battle is part of the story.
 
@@ -187,7 +187,8 @@ Music is `.ogg`, sound effects are `.wav`.
 
 - [x] Basic battle: rounds, turn order, quick and power attacks, win or lose
 - [x] Skill meter and special attacks
-- [ ] Defend and items
+- [x] Defend
+- [ ] Items in battle
 - [ ] Status effects and critical hits
 - [ ] Tag-team attacks
 - [ ] Smarter enemies, boss phases
@@ -208,7 +209,7 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 **Later (gaps to fill when each feature is built):**
 
 - [ ] Skills that heal, buff, or cause status effects (Stun, Attack down...)
-- [ ] Defend: how much it raises DEF
+- [x] Defend: how much it raises DEF
 - [ ] Skill meter: filling it from taking damage and helping allies
 - [ ] Per-turn effects like poison and regen (only a simple version exists)
 - [ ] Levels and XP: character levels, XP needed per level, XP from enemies
@@ -226,6 +227,16 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Elite enemies: a skill meter and a special that hits for about 1.3x damage
 - [ ] Bosses: a meter and their own unique special attack
 - [ ] Meter full: lightning effect, and move the meter bar next to the character portrait
+
+**Battle feel (code effects with Tweens, after the basics):**
+
+- [ ] Attacker steps forward, swaps to the attack pose, steps back
+- [ ] Target flashes white and shakes when hit
+- [ ] Damage numbers pop up and fade
+- [ ] Screen shake on big hits and crits
+- [ ] Simple sparks or dust with particles
+- [ ] Smooth HP and meter bars instead of instant jumps
+- [ ] Menu and map hover effects (grow, glow, color change)
 
 **Not assigned yet (art):**
 
