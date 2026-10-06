@@ -184,7 +184,7 @@ Music is `.ogg`, sound effects are `.wav`.
 
 **Battles:**
 
-- [ ] Basic battle: rounds, turn order, quick and power attacks, win or lose
+- [x] Basic battle: rounds, turn order, quick and power attacks, win or lose
 - [ ] Skill meter and special attacks
 - [ ] Defend and items
 - [ ] Status effects and critical hits
@@ -194,7 +194,7 @@ Music is `.ogg`, sound effects are `.wav`.
 
 **Main hub and menus:**
 
-- [ ] Title screen: New Game, Continue, Settings, Quit
+- [ ] Title screen: New Game, Continue, Settings, Quit (a bare one with Start exists)
 - [ ] Main hub: the map where you pick the next place (hover shows the name and a short description, click to go)
 - [ ] Party menu: stats, level-up bonus point, equipment, items (stat potions are used here)
 - [ ] Shop: buy the next gear tier and potions
@@ -217,6 +217,10 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)
 - [ ] Battle music: play the battle theme or boss theme by battle type, plus special songs for story fights
 - [ ] Default battle background when a fight doesn't set one
+- [ ] Maybe: a small high/low roll on damage (right now every hit does the same damage)
+- [ ] Smarter enemy choices (right now enemies pick a random move and target)
+- [ ] Keyboard and controller controls in battle (right now mouse only)
+- [ ] Retune the pause between battle actions once attack animations exist
 
 **Not assigned yet (art):**
 

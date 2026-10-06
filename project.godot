@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="dream-01"
+run/main_scene="uid://sp0g4b0o5c7f"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 

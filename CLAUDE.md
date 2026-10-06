@@ -67,7 +67,11 @@ Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_fores
 
 ## Combat design (current decisions)
 
-**Turns:** round-based. Everyone acts once per round, ordered by SPD, adjusted by skill priority.
+**Turns:** round-based. Everyone acts once per round. Order: priority first (higher goes first), then SPD (higher first); on a full tie, the party goes before enemies.
+
+**Party:** 3 members in battle (for now, testing uses 3 copies of Test Hero).
+
+**Battle screen:** side view, party on the left, enemies on the right. Mouse only for now (click an attack, then click an enemy); keyboard/controller later. Layout stretches to any window size until the base resolution is decided.
 
 **Actions:** Quick attack, Power attack, Special attack (only when skill meter is full), Item, Defend. **No fleeing**: every battle is part of the story.
 
@@ -81,7 +85,7 @@ Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_fores
 ```
 damage = power × ATK × ATK ÷ (ATK + DEF)    # rounded, minimum 1
 ```
-Magic skills use MAG instead of ATK. (A separate magic defense may be added later.)
+Magic skills use MAG instead of ATK. (A separate magic defense may be added later.) No random variance for now; a high/low roll is an open idea for later.
 
 **Skill meter:** one per character, 0–100. Resets to empty every battle. Starting gains (to tune): quick attack +10, power attack +20. Fills from attacking, taking damage, and supporting allies (heals, buffs); Defend fills it only a little.
 
@@ -95,7 +99,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Status effects (starting set):** Stun (skip next turn), ATK up/down, DEF up/down. Each lasts a set number of turns. A unit can't be stunned two rounds in a row. Every status effect is its own `.tres` file built from the same fields (duration, stat changes, skips turn, per-turn effect, icon). Stat changes are percentages (e.g. ATK up = +20%). The per-turn effect is a simple placeholder for now (HP % per turn); **revisit and expand it later** (poison, regen, etc.).
 
-**Enemy AI:** weighted randomness. Each move and target gets a score (strong attacks and low-HP targets score higher), then the enemy picks with some randomness. How "smart" each enemy is lives in its data file. Maybe later: a front/back-line formation.
+**Enemy AI:** for the prototype, a random move on a random target. Planned: weighted randomness. Each move and target gets a score (strong attacks and low-HP targets score higher), then the enemy picks with some randomness. How "smart" each enemy is lives in its data file. Maybe later: a front/back-line formation.
 
 **Bosses:** immune to stun, not to debuffs. Phases at HP thresholds (more attacks per round, stronger attacks, and/or party debuffs). Wind-up attacks telegraphed one round ahead. Battle dialogue via short Dialogic timelines on phase changes and reactions. Each phase is data on the boss, not new code.
 
@@ -135,6 +139,6 @@ Each step should leave the game playable.
 - `Item` script plus six starting items in `data/items/`.
 - `Equipment` script plus test gear (tiers 0–1) in `data/equipment/`, linked from `test_hero.tres`.
 - `feature/battle-data` merged into `dev` (PR #2).
-- Working on `feature/enemy-group`: `EnemyGroup` script, `data/enemies/test_slime.tres`, `data/enemy_groups/test_slimes.tres`. This finishes build step 1 (data Resources).
-- Next: build step 2, the basic battle.
+- `EnemyGroup` script, `data/enemies/test_slime.tres`, `data/enemy_groups/test_slimes.tres`; `feature/enemy-group` merged into `dev` (PR #4). Build step 1 (data Resources) done.
+- Working on `feature/basic-battle` (build step 2). Done: 2a, 2b, 2c (`scenes/battle/battle_screen.tscn`), 2d (`scenes/menus/title_screen.tscn`, the main scene). Pieces: 2a BattleUnit + damage formula (test scene printing results), 2b battle logic as text (rounds, turn order, win/lose, both sides automatic), 2c gray-box battle screen (HP bars, Quick/Power buttons, targeting), 2d bare title screen with Start.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.
