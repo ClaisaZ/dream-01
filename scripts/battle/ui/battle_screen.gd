@@ -24,6 +24,7 @@ var _message: Label
 var _quick_button: Button
 var _power_button: Button
 var _special_button: Button
+var _defend_button: Button
 var _restart_button: Button
 var _title_button: Button
 
@@ -37,6 +38,7 @@ func _ready() -> void:
 	_battle.party_turn_started.connect(_on_party_turn_started)
 	_battle.action_performed.connect(_on_action_performed)
 	_battle.unit_defeated.connect(_on_unit_defeated)
+	_battle.unit_defended.connect(_on_unit_defended)
 	_battle.battle_ended.connect(_on_battle_ended)
 	_battle.run()
 
@@ -81,6 +83,7 @@ func _build_layout() -> void:
 	_quick_button = _make_button("Quick Attack", buttons, _on_skill_pressed.bind(&"quick_attack"))
 	_power_button = _make_button("Power Attack", buttons, _on_skill_pressed.bind(&"power_attack"))
 	_special_button = _make_button("Special Attack", buttons, _on_skill_pressed.bind(&"special_attack"))
+	_defend_button = _make_button("Defend", buttons, _on_defend_pressed)
 	_restart_button = _make_button("Play Again", buttons, get_tree().reload_current_scene)
 	_title_button = _make_button("Title Screen", buttons, get_tree().change_scene_to_file.bind(TITLE_SCENE))
 	_restart_button.hide()
@@ -137,9 +140,19 @@ func _on_skill_pressed(slot: StringName) -> void:
 	_set_targets_enabled(true)
 
 
+## Defend needs no target: it's submitted right away.
+func _on_defend_pressed() -> void:
+	_chosen_skill = Battle.DEFEND
+	_submit(_active_unit)
+
+
 func _on_enemy_pressed(target: BattleUnit) -> void:
 	if _active_unit == null or _chosen_skill == null:
 		return
+	_submit(target)
+
+
+func _submit(target: BattleUnit) -> void:
 	var user: BattleUnit = _active_unit
 	_panels[user].set_active(false)
 	_active_unit = null
@@ -152,6 +165,7 @@ func _on_enemy_pressed(target: BattleUnit) -> void:
 func _set_attack_buttons_enabled(enabled: bool) -> void:
 	_quick_button.disabled = not enabled
 	_power_button.disabled = not enabled
+	_defend_button.disabled = not enabled
 	_special_button.disabled = not (enabled and _active_unit != null
 			and _active_unit.can_use(_active_unit.data.special_attack))
 
@@ -171,6 +185,10 @@ func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData
 	_message.text = "%s uses %s on %s: %d damage!" % [user.display_name, skill.display_name, target.display_name, damage]
 
 
+func _on_unit_defended(unit: BattleUnit) -> void:
+	_message.text = "%s defends!" % unit.display_name
+
+
 func _on_unit_defeated(unit: BattleUnit) -> void:
 	_message.text += "  %s is defeated!" % unit.display_name
 
@@ -181,5 +199,6 @@ func _on_battle_ended(party_won: bool) -> void:
 	_quick_button.hide()
 	_power_button.hide()
 	_special_button.hide()
+	_defend_button.hide()
 	_restart_button.show()
 	_title_button.show()

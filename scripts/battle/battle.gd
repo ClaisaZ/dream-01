@@ -14,11 +14,14 @@ signal party_turn_started(unit: BattleUnit)
 signal _action_submitted
 signal action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int)
 signal unit_defeated(unit: BattleUnit)
+signal unit_defended(unit: BattleUnit)
 signal battle_ended(party_won: bool)
 
 ## Safety stop so a bug can never loop forever.
 const MAX_ROUNDS: int = 100
 const RULES: BattleRules = preload("res://data/battle_rules.tres")
+## The Defend action. Its priority and meter gain live in the data file.
+const DEFEND: SkillData = preload("res://data/skills/defend.tres")
 
 var party: Array[BattleUnit] = []
 var enemies: Array[BattleUnit] = []
@@ -73,6 +76,9 @@ func is_party_alive() -> bool:
 
 func _run_round() -> void:
 	round_number += 1
+	# Defending lasts for the round it was used in.
+	for unit: BattleUnit in party + enemies:
+		unit.set_defending(false)
 	round_started.emit(round_number)
 
 	var actions: Array[Action] = []
@@ -95,6 +101,12 @@ func _run_round() -> void:
 			return
 		if not action.user.is_alive():
 			continue
+		if action.skill == DEFEND:
+			action.user.set_defending(true)
+			action.user.add_meter(DEFEND.skill_meter_gain)
+			unit_defended.emit(action.user)
+			await _pause()
+			continue
 		# If the chosen target already fell this round, hit someone else on that side.
 		if not action.target.is_alive():
 			action.target = _random_alive(_opponents_of(action.user))
@@ -106,8 +118,7 @@ func _run_round() -> void:
 		action.target.take_damage(damage)
 		if action.target.is_alive():
 			action.target.add_meter(RULES.meter_gain_when_hit)
-		if action_delay > 0.0:
-			await (Engine.get_main_loop() as SceneTree).create_timer(action_delay).timeout
+		await _pause()
 
 
 ## Prototype choice: the special as soon as the meter is full, otherwise a
@@ -130,6 +141,12 @@ func _goes_before(a: Action, b: Action) -> bool:
 	if a.user.spd != b.user.spd:
 		return a.user.spd > b.user.spd
 	return a.user.is_party and not b.user.is_party
+
+
+## Waits action_delay seconds so the player can follow along (no wait in tests).
+func _pause() -> void:
+	if action_delay > 0.0:
+		await (Engine.get_main_loop() as SceneTree).create_timer(action_delay).timeout
 
 
 func _opponents_of(unit: BattleUnit) -> Array[BattleUnit]:
@@ -156,6 +173,7 @@ func _make_units(templates: Array[UnitData], on_party: bool) -> Array[BattleUnit
 			seen[template] = seen.get(template, 0) + 1
 		var unit := BattleUnit.new(template, on_party, suffix)
 		unit.meter_max = RULES.meter_max
+		unit.defend_multiplier = RULES.defend_def_multiplier
 		units.append(unit)
 	return units
 

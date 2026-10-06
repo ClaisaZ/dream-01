@@ -23,8 +23,8 @@ enum Stat { ATK, DEF, SPD, MAG }
 @export_group("Usage")
 @export var usable_in_battle: bool = true
 @export var usable_outside_battle: bool = true
-## Using an item takes the character's turn. 2 = acts before quick attacks (+1).
-@export var priority: int = 2
+## Using an item takes the character's turn. 3 = acts first of all (before Defend +2).
+@export var priority: int = 3
 
 @export_group("Shop")
 ## 0 = not sold in shops (e.g. rare stat potions).

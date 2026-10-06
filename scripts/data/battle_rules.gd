@@ -3,6 +3,10 @@ extends Resource
 ## Battle-wide numbers that aren't tied to one unit or skill.
 ## There's one file, /data/battle_rules.tres. Tune it there, never in code.
 
+@export_group("Defend")
+## A defending unit's DEF is multiplied by this for the rest of the round.
+@export var defend_def_multiplier: float = 1.5
+
 @export_group("Skill Meter")
 ## A full meter. Specials need this much.
 @export var meter_max: int = 100

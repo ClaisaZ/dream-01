@@ -13,6 +13,7 @@ const METER_FULL_COLOR := Color(0.4, 0.8, 1.0)
 
 var unit: BattleUnit
 
+var _name_label: Label
 var _hp_bar: ProgressBar
 var _hp_label: Label
 var _meter_bar: ProgressBar
@@ -30,9 +31,9 @@ func _init(battle_unit: BattleUnit) -> void:
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(box)
 
-	var name_label := Label.new()
-	name_label.text = unit.display_name
-	box.add_child(name_label)
+	_name_label = Label.new()
+	_name_label.text = unit.display_name
+	box.add_child(_name_label)
 
 	_hp_bar = ProgressBar.new()
 	_hp_bar.max_value = unit.max_hp
@@ -60,6 +61,7 @@ func _init(battle_unit: BattleUnit) -> void:
 
 	unit.hp_changed.connect(_on_hp_changed)
 	unit.died.connect(_on_died)
+	unit.defending_changed.connect(_on_defending_changed)
 	_on_hp_changed(unit, unit.current_hp, unit.max_hp)
 
 
@@ -79,6 +81,10 @@ func _on_meter_changed(_unit: BattleUnit, meter: int, meter_max: int) -> void:
 	_meter_label.text = "METER FULL!" if full else "Meter %d / %d" % [meter, meter_max]
 	_meter_bar.modulate = METER_FULL_COLOR if full else Color.WHITE
 	_meter_label.modulate = METER_FULL_COLOR if full else Color.WHITE
+
+
+func _on_defending_changed(_unit: BattleUnit, defending: bool) -> void:
+	_name_label.text = unit.display_name + ("  [DEFENDING]" if defending else "")
 
 
 func _on_died(_unit: BattleUnit) -> void:
