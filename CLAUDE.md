@@ -89,7 +89,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Timed cool moves:** only special attacks and tag-teams get the pose + timed button press. Normal attacks stay fast. Build this last.
 
-**Status effects (starting set):** Stun (skip next turn), ATK up/down, DEF up/down. Each lasts a set number of turns. A unit can't be stunned two rounds in a row. Every status effect is its own `.tres` file built from the same fields (duration, stat changes, skips turn, per-turn effect, icon).
+**Status effects (starting set):** Stun (skip next turn), ATK up/down, DEF up/down. Each lasts a set number of turns. A unit can't be stunned two rounds in a row. Every status effect is its own `.tres` file built from the same fields (duration, stat changes, skips turn, per-turn effect, icon). Stat changes are percentages (e.g. ATK up = +20%). The per-turn effect is a simple placeholder for now (HP % per turn); **revisit and expand it later** (poison, regen, etc.).
 
 **Enemy AI:** weighted randomness. Each move and target gets a score (strong attacks and low-HP targets score higher), then the enemy picks with some randomness. How "smart" each enemy is lives in its data file. Maybe later: a front/back-line formation.
 
@@ -123,6 +123,6 @@ Each step should leave the game playable.
 
 - Project created, folders set up, Git LFS configured, `dev` branch created.
 - Dialogic 2 installed and merged into `dev`.
-- Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit).
-- Next: remaining data Resources (StatusEffect, Item, Equipment, EnemyGroup).
+- Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit). `StatusEffect` script plus the five starting effects in `data/status_effects/` (buffs/debuffs: 3 turns, ±20%; stun: 1 turn).
+- Next: remaining data Resources (Item, Equipment, EnemyGroup).
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.
