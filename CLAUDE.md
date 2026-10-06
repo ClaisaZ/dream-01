@@ -53,6 +53,8 @@ If a feature doesn't support at least one pillar, flag it.
 
 Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_forest_night.png`.
 
+`ASSETS.md` lists every art and audio asset the team needs to make. **Whenever a feature adds a new picture or sound slot (a new status effect, item, enemy, UI element...), add it to `ASSETS.md`** in the same commit. The team doesn't code: keep `ASSETS.md` in plain language (no code, project folders, or engine terms) with clear hand-over steps. They send files via Discord for now (maybe Google Drive later); I place them into `/art` and `/audio`.
+
 ## Architecture rules
 
 - **Data-driven.** Units, skills, items, equipment, status effects, enemy groups, and boss phases are Godot Resources saved as `.tres` files. Balancing should never require code changes.
