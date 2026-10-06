@@ -204,6 +204,18 @@ Music is `.ogg`, sound effects are `.wav`.
 
 Art this needs (not assigned yet): title logo, title screen background, hub map, menu frames.
 
+**Later (gaps to fill when each feature is built):**
+
+- [ ] Skills that heal, buff, or cause status effects (Stun, Attack down...)
+- [ ] Defend: how much it raises DEF
+- [ ] Skill meter: filling it from taking damage and helping allies
+- [ ] Per-turn effects like poison and regen (only a simple version exists)
+- [ ] Levels and XP: character levels, XP needed per level, XP from enemies
+- [ ] Money: rewards from battles, connect shop prices
+- [ ] Enemy AI settings: how smart each enemy is
+- [ ] Boss phases: what changes at each health threshold
+- [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)
+
 **Not assigned yet (art):**
 
 - Status effect icons: `icon_stun.png`, `icon_atk_up.png`, `icon_atk_down.png`, `icon_def_up.png`, `icon_def_down.png`

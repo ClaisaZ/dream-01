@@ -55,7 +55,7 @@ If a feature doesn't support at least one pillar, flag it.
 
 Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_forest_night.png`.
 
-**The bible** is the team's plan and per-person task lists. It exists twice and both must match: `BIBLE.md` in the repo and the shared claude.ai doc "Dream-01 Bible" (https://claude.ai/code/artifact/5fd09cc9-2285-4313-84de-62fb7a318b79). **Whenever a feature adds a new picture or sound slot (a new status effect, item, enemy, UI element...) or a design decision changes, update both** (BIBLE.md in the same commit). Keep it short. The team doesn't code: keep the bible in plain language (no code, project folders, or engine terms) with clear hand-over steps. They send files via Discord for now (maybe Google Drive later); I place them into `/art` and `/audio`.
+**The bible** is the team's plan and per-person task lists. It exists twice and both must match: `BIBLE.md` in the repo and the shared claude.ai doc "Dream-01 Bible" (https://claude.ai/code/artifact/5fd09cc9-2285-4313-84de-62fb7a318b79). **Whenever a feature adds a new picture or sound slot (a new status effect, item, enemy, UI element...) or a design decision changes, update both** (BIBLE.md in the same commit). Keep it short. **Whenever you spot a new programming task (a gap, a missing field, a later feature), add it to the "Clayton: programming" section of both copies without asking.** The team doesn't code: keep the bible in plain language (no code, project folders, or engine terms) with clear hand-over steps. They send files via Discord for now (maybe Google Drive later); I place them into `/art` and `/audio`.
 
 ## Architecture rules
 
