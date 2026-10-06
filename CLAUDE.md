@@ -122,6 +122,7 @@ Each step should leave the game playable.
 - Before switching branches, remind me to save and close Godot (or reload from disk afterward).
 - Never commit `.godot/` or `/builds/`.
 - Short, clear commit messages describing what changed.
+- **No `Co-Authored-By` lines or other Claude attribution in commits or pull requests.** Commits should show only me as the author.
 
 ## Current status
 
