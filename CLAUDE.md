@@ -140,5 +140,5 @@ Each step should leave the game playable.
 - `Equipment` script plus test gear (tiers 0–1) in `data/equipment/`, linked from `test_hero.tres`.
 - `feature/battle-data` merged into `dev` (PR #2).
 - `EnemyGroup` script, `data/enemies/test_slime.tres`, `data/enemy_groups/test_slimes.tres`; `feature/enemy-group` merged into `dev` (PR #4). Build step 1 (data Resources) done.
-- Working on `feature/basic-battle` (build step 2). Done: 2a, 2b, 2c (`scenes/battle/battle_screen.tscn`). Pieces: 2a BattleUnit + damage formula (test scene printing results), 2b battle logic as text (rounds, turn order, win/lose, both sides automatic), 2c gray-box battle screen (HP bars, Quick/Power buttons, targeting), 2d bare title screen with Start.
+- Working on `feature/basic-battle` (build step 2). Done: 2a, 2b, 2c (`scenes/battle/battle_screen.tscn`), 2d (`scenes/menus/title_screen.tscn`, the main scene). Pieces: 2a BattleUnit + damage formula (test scene printing results), 2b battle logic as text (rounds, turn order, win/lose, both sides automatic), 2c gray-box battle screen (HP bars, Quick/Power buttons, targeting), 2d bare title screen with Start.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

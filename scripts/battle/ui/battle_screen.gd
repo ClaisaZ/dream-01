@@ -11,6 +11,8 @@ const PARTY: Array[UnitData] = [
 	preload("res://data/units/test_hero.tres"),
 ]
 const ENEMY_GROUP: EnemyGroup = preload("res://data/enemy_groups/test_slimes.tres")
+const TITLE_SCENE: String = "res://scenes/menus/title_screen.tscn"
+## Retune once attack animations exist; they'll add their own time.
 const ACTION_DELAY: float = 0.8
 
 var _battle: Battle
@@ -22,6 +24,7 @@ var _message: Label
 var _quick_button: Button
 var _power_button: Button
 var _restart_button: Button
+var _title_button: Button
 
 
 func _ready() -> void:
@@ -77,8 +80,18 @@ func _build_layout() -> void:
 	_quick_button = _make_button("Quick Attack", buttons, _on_skill_pressed.bind(true))
 	_power_button = _make_button("Power Attack", buttons, _on_skill_pressed.bind(false))
 	_restart_button = _make_button("Play Again", buttons, get_tree().reload_current_scene)
+	_title_button = _make_button("Title Screen", buttons, get_tree().change_scene_to_file.bind(TITLE_SCENE))
 	_restart_button.hide()
+	_title_button.hide()
 	_set_attack_buttons_enabled(false)
+
+	# Testing shortcut: leave the battle at any time. Top-right corner.
+	var back_button := Button.new()
+	back_button.text = "Back to Title"
+	back_button.focus_mode = Control.FOCUS_NONE
+	back_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 8)
+	back_button.pressed.connect(get_tree().change_scene_to_file.bind(TITLE_SCENE))
+	add_child(back_button)
 
 
 func _make_side(units: Array[BattleUnit]) -> VBoxContainer:
@@ -162,3 +175,4 @@ func _on_battle_ended(party_won: bool) -> void:
 	_quick_button.hide()
 	_power_button.hide()
 	_restart_button.show()
+	_title_button.show()
