@@ -13,10 +13,12 @@ Guidance for Claude Code when working in this repo (dream-01).
 
 A short (~5 hour) JRPG-inspired, turn-based game where the story is told through visual novel scenes. Built by a team of four as a passion project (no deadline):
 
-- **Me:** programming and systems (engine, combat, menus, saves, integrating everyone's work)
-- **Sister:** story and writing (writes scenes as Dialogic timelines)
-- **Cousin:** art (portraits, sprites, backgrounds, UI, effects)
-- **Friend:** music and audio
+- **Me (Clayton):** programming and systems (engine, combat, menus, saves, integrating everyone's work)
+- **Rachel:** story, script, dialogue, creating characters (scenes become Dialogic timelines)
+- **Joli:** party character portraits, battle sprites, and their attack animations (quick, power, special, tag-team); later armor, potions, items
+- **Macy:** enemies, bosses, and their attack animations, plus shared battle effects (hit flash, crit, heal, buff/debuff); scope may grow
+- **Music and audio:** open role, still looking for someone
+- **Not assigned yet:** status icons, battle UI, backgrounds
 
 Art, story, and audio arrive later. Programming comes first, **built with placeholders** (gray boxes, temp numbers) so nobody waits on anybody.
 
@@ -53,7 +55,7 @@ If a feature doesn't support at least one pillar, flag it.
 
 Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_forest_night.png`.
 
-`ASSETS.md` lists every art and audio asset the team needs to make. **Whenever a feature adds a new picture or sound slot (a new status effect, item, enemy, UI element...), add it to `ASSETS.md`** in the same commit. The team doesn't code: keep `ASSETS.md` in plain language (no code, project folders, or engine terms) with clear hand-over steps. They send files via Discord for now (maybe Google Drive later); I place them into `/art` and `/audio`.
+**The bible** is the team's plan and per-person task lists. It exists twice and both must match: `BIBLE.md` in the repo and the shared claude.ai doc "Dream-01 Bible" (https://claude.ai/code/artifact/5fd09cc9-2285-4313-84de-62fb7a318b79). **Whenever a feature adds a new picture or sound slot (a new status effect, item, enemy, UI element...) or a design decision changes, update both** (BIBLE.md in the same commit). Keep it short. The team doesn't code: keep the bible in plain language (no code, project folders, or engine terms) with clear hand-over steps. They send files via Discord for now (maybe Google Drive later); I place them into `/art` and `/audio`.
 
 ## Architecture rules
 
