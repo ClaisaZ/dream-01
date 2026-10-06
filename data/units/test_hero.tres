@@ -5,6 +5,11 @@
 [ext_resource type="Resource" uid="uid://dji0fgcsenmoq" path="res://data/skills/quick_attack.tres" id="2_quick"]
 [ext_resource type="Resource" uid="uid://dw8rbffdyk7l3" path="res://data/skills/power_attack.tres" id="3_power"]
 [ext_resource type="Resource" uid="uid://j0knkdql7ynx" path="res://data/skills/special_attack.tres" id="4_special"]
+[ext_resource type="Script" uid="uid://bsua3jvaxolup" path="res://scripts/data/equipment.gd" id="5_equip"]
+[ext_resource type="Resource" path="res://data/equipment/test_hero_weapon_0.tres" id="6_w0"]
+[ext_resource type="Resource" path="res://data/equipment/test_hero_weapon_1.tres" id="7_w1"]
+[ext_resource type="Resource" path="res://data/equipment/test_hero_armor_0.tres" id="8_a0"]
+[ext_resource type="Resource" path="res://data/equipment/test_hero_armor_1.tres" id="9_a1"]
 
 [resource]
 script = ExtResource("1_unit")
@@ -12,3 +17,5 @@ display_name = "Test Hero"
 quick_attack = ExtResource("2_quick")
 power_attack = ExtResource("3_power")
 special_attack = ExtResource("4_special")
+weapons = Array[ExtResource("5_equip")]([ExtResource("6_w0"), ExtResource("7_w1")])
+armors = Array[ExtResource("5_equip")]([ExtResource("8_a0"), ExtResource("9_a1")])

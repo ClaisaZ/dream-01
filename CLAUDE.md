@@ -101,7 +101,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Items:** HP potion, skill meter boost, and permanent stat potions (ATK, DEF, SPD, MAG) that are rare rewards, not sold in shops. HP potion heals 30% of max HP (in and out of battle). Meter boost +50 (battle only, since the meter resets each battle). Stat potions +1, outside battle only. Using an item takes the character's turn at priority +2 (before quick attacks). Prices are placeholders until the economy is designed.
 
-**Equipment:** one weapon and one armor set per character. Shops sell the next tier up.
+**Equipment:** one weapon and one armor set per character. Each piece fits one character only, so each character upgrades in a straight line. Flat stat bonuses (weapons: ATK/MAG, sometimes SPD; armor: DEF/HP). Each boss beaten unlocks the next tier in the shop. The gear line lives on the character (`UnitData.weapons` / `armors`, index = tier) so gear never points back to its owner (avoids cyclic resources). Gear with special effects (crit, meter gain...) is a maybe-later; probably out of scope for a game this size.
 
 **Leveling:** +1 to every stat and +5 HP per level, plus 1 extra stat point the player assigns. Story moments grant new skills or passives. No catch-up XP for now.
 
@@ -129,5 +129,6 @@ Each step should leave the game playable.
 - Dialogic 2 installed and merged into `dev`.
 - Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit). `StatusEffect` script plus the five starting effects in `data/status_effects/` (buffs/debuffs: 3 turns, ±20%; stun: 1 turn).
 - `Item` script plus six starting items in `data/items/`.
-- Next: remaining data Resources (Equipment, EnemyGroup).
+- `Equipment` script plus test gear (tiers 0–1) in `data/equipment/`, linked from `test_hero.tres`.
+- Next: EnemyGroup, then merge `feature/battle-data` into `dev`.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

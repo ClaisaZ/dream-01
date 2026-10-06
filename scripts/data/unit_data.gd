@@ -27,6 +27,12 @@ extends Resource
 ## Any extra skills (heals, buffs...). Can stay empty for now.
 @export var extra_skills: Array[SkillData] = []
 
+@export_group("Gear")
+## This character's gear line, in order. Index = tier: [0] is starting gear,
+## [1] unlocks in the shop after the 1st boss, and so on. Enemies leave these empty.
+@export var weapons: Array[Equipment] = []
+@export var armors: Array[Equipment] = []
+
 @export_group("Art")
 ## Placeholders are fine until the real art arrives.
 @export var portrait: Texture2D

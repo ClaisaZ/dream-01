@@ -65,7 +65,7 @@ There's no running away: every battle is part of the story.
 - **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
 - **Items:** HP potion (heals 30%), meter boost, and rare potions that raise a stat forever.
-- **Gear:** one weapon and one armor per character. Shops sell the next tier up.
+- **Gear:** one weapon and one armor per character, made for that character only. Beating a boss unlocks the next upgrade in the shop.
 - **Leveling up:** every stat goes up by 1, plus 1 bonus point the player chooses.
 
 ## Rachel: story and characters
@@ -125,7 +125,7 @@ Glows and color changes are done in code. Only draw frames for real movement.
 - [ ] Meter boost: `icon_meter_boost.png`
 - [ ] Stat potions: `icon_atk_potion.png`, `icon_def_potion.png`, `icon_spd_potion.png`, `icon_mag_potion.png`
 
-**Later:** weapon and armor icons (list comes once gear is designed).
+**Later:** an icon for each weapon and armor upgrade: `icon_<name>_weapon_<tier>.png`, `icon_<name>_armor_<tier>.png` (one per boss, plus starting gear).
 
 ## Macy: enemies, bosses, and attacks
 
@@ -179,7 +179,7 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Characters and moves
 - [x] Status effects (Stun, Attack up/down, Defense up/down)
 - [x] Items
-- [ ] Weapons and armor
+- [x] Weapons and armor
 - [ ] Enemy groups
 
 **Battles:**
