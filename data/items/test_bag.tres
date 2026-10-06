@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemBag" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_bag.gd" id="1_bag"]
+[ext_resource type="Script" uid="uid://b738pu0rajm1m" path="res://scripts/data/item.gd" id="2_item"]
+[ext_resource type="Resource" path="res://data/items/hp_potion.tres" id="3_hp"]
+[ext_resource type="Resource" path="res://data/items/meter_boost.tres" id="4_meter"]
+
+[resource]
+script = ExtResource("1_bag")
+items = Dictionary[ExtResource("2_item"), int]({
+ExtResource("3_hp"): 3,
+ExtResource("4_meter"): 2
+})
