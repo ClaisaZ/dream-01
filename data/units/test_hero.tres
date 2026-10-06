@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UnitData" format=3 uid="uid://bofsar4d3ivj3"]
+
+[ext_resource type="Script" uid="uid://d0maagdhx3fdg" path="res://scripts/data/skill_data.gd" id="1_jus5x"]
+[ext_resource type="Script" uid="uid://o82wgafflnwh" path="res://scripts/data/unit_data.gd" id="1_unit"]
+[ext_resource type="Resource" uid="uid://dji0fgcsenmoq" path="res://data/skills/quick_attack.tres" id="2_quick"]
+[ext_resource type="Resource" uid="uid://dw8rbffdyk7l3" path="res://data/skills/power_attack.tres" id="3_power"]
+[ext_resource type="Resource" uid="uid://j0knkdql7ynx" path="res://data/skills/special_attack.tres" id="4_special"]
+
+[resource]
+script = ExtResource("1_unit")
+display_name = "Test Hero"
+quick_attack = ExtResource("2_quick")
+power_attack = ExtResource("3_power")
+special_attack = ExtResource("4_special")

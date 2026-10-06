@@ -79,7 +79,7 @@ damage = power × ATK × ATK ÷ (ATK + DEF)    # rounded, minimum 1
 ```
 Magic skills use MAG instead of ATK. (A separate magic defense may be added later.)
 
-**Skill meter:** one per character. Resets to empty every battle. Fills from attacking, taking damage, and supporting allies (heals, buffs); Defend fills it only a little.
+**Skill meter:** one per character, 0–100. Resets to empty every battle. Starting gains (to tune): quick attack +10, power attack +20. Fills from attacking, taking damage, and supporting allies (heals, buffs); Defend fills it only a little.
 
 **Defend:** raises the character's DEF until their next turn (exact boost tuned in testing).
 
@@ -123,5 +123,6 @@ Each step should leave the game playable.
 
 - Project created, folders set up, Git LFS configured, `dev` branch created.
 - Dialogic 2 installed and merged into `dev`.
-- Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`.
+- Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit).
+- Next: remaining data Resources (StatusEffect, Item, Equipment, EnemyGroup).
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://dji0fgcsenmoq"]
+
+[ext_resource type="Script" uid="uid://d0maagdhx3fdg" path="res://scripts/data/skill_data.gd" id="1_skill"]
+
+[resource]
+script = ExtResource("1_skill")
+display_name = "Quick Attack"
+description = "A fast strike that acts early."
+power = 0.8
+priority = 1
+skill_meter_gain = 10.0
+metadata/_custom_type_script = "uid://d0maagdhx3fdg"
