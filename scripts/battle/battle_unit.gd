@@ -102,6 +102,14 @@ func take_damage(amount: int) -> int:
 	return taken
 
 
+## Raises HP (never above max) and returns the HP actually restored.
+func heal(amount: int) -> int:
+	var healed: int = mini(amount, max_hp - current_hp)
+	current_hp += healed
+	hp_changed.emit(self, current_hp, max_hp)
+	return healed
+
+
 ## How much damage this unit's skill would deal to the target.
 func damage_against(target: BattleUnit, skill: SkillData) -> int:
 	var attack_stat: int = mag if skill.damage_type == SkillData.DamageType.MAGIC else atk

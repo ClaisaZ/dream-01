@@ -64,7 +64,7 @@ There's no running away: every battle is part of the story.
 - **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely.
 - **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
-- **Items:** HP potion (heals 30%), meter boost, and rare potions that raise a stat forever.
+- **Items:** one shared bag for the party. HP potion (heals 30%), meter boost, and rare potions that raise a stat forever. No revive items: a fallen party member stays out for the rest of the fight.
 - **Gear:** one weapon and one armor per character, made for that character only. Beating a boss unlocks the next upgrade in the shop.
 - **Leveling up:** every stat goes up by 1, plus 1 bonus point the player chooses.
 
@@ -76,6 +76,7 @@ Your writing decides what Joli and Macy draw, so the first tasks are the ones th
 
 - [ ] Story outline: beginning, middle, end (about 5 hours of play)
 - [ ] Main party: names, personalities, rough look, how they fight (weapon choice)
+- [ ] Is anyone a healer or cleric? There are no revive items, so a resurrect skill would be their thing
 - [ ] Main enemies and bosses: who they are and why they fight the party
 
 **Then, for the artists:**
@@ -188,7 +189,7 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Basic battle: rounds, turn order, quick and power attacks, win or lose
 - [x] Skill meter and special attacks
 - [x] Defend
-- [ ] Items in battle
+- [x] Items in battle
 - [ ] Status effects and critical hits
 - [ ] Tag-team attacks
 - [ ] Smarter enemies, boss phases
@@ -214,6 +215,7 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Per-turn effects like poison and regen (only a simple version exists)
 - [ ] Levels and XP: character levels, XP needed per level, XP from enemies
 - [ ] Money: rewards from battles, connect shop prices
+- [ ] Real party bag from game progress (battles use a test bag for now)
 - [ ] Enemy AI settings: how smart each enemy is
 - [ ] Boss phases: what changes at each health threshold
 - [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)

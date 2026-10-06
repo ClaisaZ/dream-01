@@ -4,8 +4,8 @@ extends RefCounted
 ## Holds no visuals. It reports what happens through signals, and a battle
 ## screen (or a test scene) listens and shows it.
 ##
-## Party members wait for the player (see party_turn_started / submit_action),
-## unless auto_party is on. Enemies pick a random Quick or Power attack on a
+## Party members wait for the player (see party_turn_started / submit_action /
+## submit_item), unless auto_party is on. Items come from the party's shared bag. Enemies pick a random Quick or Power attack on a
 ## random living target.
 
 signal round_started(round_number: int)
@@ -15,6 +15,10 @@ signal _action_submitted
 signal action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int)
 signal unit_defeated(unit: BattleUnit)
 signal unit_defended(unit: BattleUnit)
+## amount = HP restored or meter added, depending on the item.
+signal item_used(user: BattleUnit, target: BattleUnit, item: Item, amount: int)
+## The item had no valid target left, so it went back in the bag.
+signal item_returned(user: BattleUnit, item: Item)
 signal battle_ended(party_won: bool)
 
 ## Safety stop so a bug can never loop forever.
@@ -31,24 +35,34 @@ var auto_party: bool = false
 ## Seconds to wait after each action so the player can follow along. 0 = instant.
 var action_delay: float = 0.0
 
+## This battle's own copy of the bag: Item -> count. The bag file is never changed.
+var item_counts: Dictionary[Item, int] = {}
+
 var _submitted_action: Action
 
 
-## One unit's choice for the round.
+## One unit's choice for the round: a skill, or an item (then skill is null).
 class Action:
 	var user: BattleUnit
 	var skill: SkillData
+	var item: Item
 	var target: BattleUnit
 
-	func _init(p_user: BattleUnit, p_skill: SkillData, p_target: BattleUnit) -> void:
+	func _init(p_user: BattleUnit, p_skill: SkillData, p_target: BattleUnit, p_item: Item = null) -> void:
 		user = p_user
 		skill = p_skill
 		target = p_target
+		item = p_item
+
+	func priority() -> int:
+		return item.priority if item != null else skill.priority
 
 
-func _init(party_data: Array[UnitData], enemy_group: EnemyGroup) -> void:
+func _init(party_data: Array[UnitData], enemy_group: EnemyGroup, bag: ItemBag = null) -> void:
 	party = _make_units(party_data, true)
 	enemies = _make_units(enemy_group.enemies, false)
+	if bag != null:
+		item_counts = bag.items.duplicate()
 	for unit: BattleUnit in party + enemies:
 		unit.died.connect(_on_unit_died)
 
@@ -64,6 +78,34 @@ func run() -> void:
 func submit_action(user: BattleUnit, skill: SkillData, target: BattleUnit) -> void:
 	_submitted_action = Action.new(user, skill, target)
 	_action_submitted.emit()
+
+
+## The player's item choice. The item is taken from the bag right away, so two
+## party members can't both use the last one in the same round.
+func submit_item(user: BattleUnit, item: Item, target: BattleUnit) -> void:
+	item_counts[item] -= 1
+	_submitted_action = Action.new(user, null, target, item)
+	_action_submitted.emit()
+
+
+## Items the party can use in battle right now: at least one left, and at
+## least one party member it would work on.
+func usable_items() -> Array[Item]:
+	var usable: Array[Item] = []
+	for item: Item in item_counts:
+		if item.usable_in_battle and item_counts[item] > 0 				and party.any(func(u: BattleUnit) -> bool: return can_use_item_on(item, u)):
+			usable.append(item)
+	return usable
+
+
+## Can this item target this unit? Never a fallen unit; a meter item never
+## someone without a meter or with a full one.
+func can_use_item_on(item: Item, unit: BattleUnit) -> bool:
+	if not unit.is_alive():
+		return false
+	if item.effect == Item.Effect.FILL_METER:
+		return unit.has_meter and not unit.is_meter_full()
+	return true
 
 
 func is_over() -> bool:
@@ -100,6 +142,12 @@ func _run_round() -> void:
 		if is_over():
 			return
 		if not action.user.is_alive():
+			if action.item != null:
+				item_counts[action.item] += 1  # never used, so it goes back in the bag
+			continue
+		if action.item != null:
+			_use_item(action)
+			await _pause()
 			continue
 		if action.skill == DEFEND:
 			action.user.set_defending(true)
@@ -121,6 +169,26 @@ func _run_round() -> void:
 		await _pause()
 
 
+func _use_item(action: Action) -> void:
+	# If the target can't take the item anymore (e.g. they fell), pick a new one.
+	if not can_use_item_on(action.item, action.target):
+		action.target = _fallback_item_target(action.item)
+	if action.target == null:
+		item_counts[action.item] += 1
+		item_returned.emit(action.user, action.item)
+		return
+	var amount: int = 0
+	match action.item.effect:
+		Item.Effect.HEAL_HP:
+			var heal: int = maxi(1, roundi(action.target.max_hp * action.item.amount / 100.0))
+			amount = action.target.heal(heal)
+		Item.Effect.FILL_METER:
+			var before: int = action.target.meter
+			action.target.add_meter(action.item.amount)
+			amount = action.target.meter - before
+	item_used.emit(action.user, action.target, action.item, amount)
+
+
 ## Prototype choice: the special as soon as the meter is full, otherwise a
 ## random Quick/Power attack. Always a random living target.
 func _choose_action(unit: BattleUnit) -> Action:
@@ -136,8 +204,8 @@ func _choose_action(unit: BattleUnit) -> Action:
 
 ## Turn order: higher priority first, then higher SPD, then the party wins ties.
 func _goes_before(a: Action, b: Action) -> bool:
-	if a.skill.priority != b.skill.priority:
-		return a.skill.priority > b.skill.priority
+	if a.priority() != b.priority():
+		return a.priority() > b.priority()
 	if a.user.spd != b.user.spd:
 		return a.user.spd > b.user.spd
 	return a.user.is_party and not b.user.is_party
@@ -155,6 +223,36 @@ func _opponents_of(unit: BattleUnit) -> Array[BattleUnit]:
 
 func _random_alive(units: Array[BattleUnit]) -> BattleUnit:
 	return units.filter(func(u: BattleUnit) -> bool: return u.is_alive()).pick_random()
+
+
+## Who gets an item whose target can't take it:
+## healing goes to the lowest HP ally, a meter item to the meter closest to full.
+func _fallback_item_target(item: Item) -> BattleUnit:
+	if item.effect == Item.Effect.FILL_METER:
+		return _closest_to_full_meter(party, item)
+	return _lowest_hp_alive(party)
+
+
+## The ally with the highest meter that isn't full yet, so the item is most
+## likely to unlock their special. Null if nobody can take it.
+func _closest_to_full_meter(units: Array[BattleUnit], item: Item) -> BattleUnit:
+	var best: BattleUnit = null
+	for unit: BattleUnit in units:
+		if can_use_item_on(item, unit) and (best == null or unit.meter > best.meter):
+			best = unit
+	return best
+
+
+## Lowest HP as a share of max HP, so units with different max HP compare fairly.
+## On a tie, the first one in the list wins.
+func _lowest_hp_alive(units: Array[BattleUnit]) -> BattleUnit:
+	var lowest: BattleUnit = null
+	for unit: BattleUnit in units:
+		if not unit.is_alive():
+			continue
+		if lowest == null or float(unit.current_hp) / unit.max_hp < float(lowest.current_hp) / lowest.max_hp:
+			lowest = unit
+	return lowest
 
 
 func _any_alive(units: Array[BattleUnit]) -> bool:
