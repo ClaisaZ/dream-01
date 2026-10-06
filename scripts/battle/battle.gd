@@ -4,10 +4,14 @@ extends RefCounted
 ## Holds no visuals. It reports what happens through signals, and a battle
 ## screen (or a test scene) listens and shows it.
 ##
-## For now both sides pick automatically: a random Quick or Power attack on a
-## random living target. Player choices come with the battle screen.
+## Party members wait for the player (see party_turn_started / submit_action),
+## unless auto_party is on. Enemies pick a random Quick or Power attack on a
+## random living target.
 
 signal round_started(round_number: int)
+## A party member needs a choice. Answer with submit_action().
+signal party_turn_started(unit: BattleUnit)
+signal _action_submitted
 signal action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int)
 signal unit_defeated(unit: BattleUnit)
 signal battle_ended(party_won: bool)
@@ -18,6 +22,12 @@ const MAX_ROUNDS: int = 100
 var party: Array[BattleUnit] = []
 var enemies: Array[BattleUnit] = []
 var round_number: int = 0
+## True = party members also pick randomly (used by the text test).
+var auto_party: bool = false
+## Seconds to wait after each action so the player can follow along. 0 = instant.
+var action_delay: float = 0.0
+
+var _submitted_action: Action
 
 
 ## One unit's choice for the round.
@@ -42,8 +52,14 @@ func _init(party_data: Array[UnitData], enemy_group: EnemyGroup) -> void:
 ## Plays the whole battle until one side is defeated.
 func run() -> void:
 	while not is_over() and round_number < MAX_ROUNDS:
-		_run_round()
+		await _run_round()
 	battle_ended.emit(is_party_alive())
+
+
+## The player's choice for the party member named in party_turn_started.
+func submit_action(user: BattleUnit, skill: SkillData, target: BattleUnit) -> void:
+	_submitted_action = Action.new(user, skill, target)
+	_action_submitted.emit()
 
 
 func is_over() -> bool:
@@ -59,7 +75,16 @@ func _run_round() -> void:
 	round_started.emit(round_number)
 
 	var actions: Array[Action] = []
-	for unit: BattleUnit in party + enemies:
+	for unit: BattleUnit in party:
+		if not unit.is_alive():
+			continue
+		if auto_party:
+			actions.append(_choose_action(unit))
+		else:
+			party_turn_started.emit(unit)
+			await _action_submitted
+			actions.append(_submitted_action)
+	for unit: BattleUnit in enemies:
 		if unit.is_alive():
 			actions.append(_choose_action(unit))
 	actions.sort_custom(_goes_before)
@@ -75,6 +100,8 @@ func _run_round() -> void:
 		var damage: int = action.user.damage_against(action.target, action.skill)
 		action_performed.emit(action.user, action.target, action.skill, damage)
 		action.target.take_damage(damage)
+		if action_delay > 0.0:
+			await (Engine.get_main_loop() as SceneTree).create_timer(action_delay).timeout
 
 
 ## Prototype choice for both sides: random Quick/Power attack, random living target.

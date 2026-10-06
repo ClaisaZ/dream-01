@@ -1,0 +1,164 @@
+extends Control
+## Gray-box battle screen: party on the left, enemies on the right,
+## a message line and attack buttons at the bottom. Mouse only for now.
+##
+## Flow for each party member: click Quick or Power, then click an enemy.
+## Talks to Battle only through its signals and submit_action().
+
+const PARTY: Array[UnitData] = [
+	preload("res://data/units/test_hero.tres"),
+	preload("res://data/units/test_hero.tres"),
+	preload("res://data/units/test_hero.tres"),
+]
+const ENEMY_GROUP: EnemyGroup = preload("res://data/enemy_groups/test_slimes.tres")
+const ACTION_DELAY: float = 0.8
+
+var _battle: Battle
+var _panels: Dictionary[BattleUnit, UnitPanel] = {}
+var _active_unit: BattleUnit
+var _chosen_skill: SkillData
+
+var _message: Label
+var _quick_button: Button
+var _power_button: Button
+var _restart_button: Button
+
+
+func _ready() -> void:
+	_battle = Battle.new(PARTY, ENEMY_GROUP)
+	_battle.action_delay = ACTION_DELAY
+	_build_layout()
+
+	_battle.round_started.connect(_on_round_started)
+	_battle.party_turn_started.connect(_on_party_turn_started)
+	_battle.action_performed.connect(_on_action_performed)
+	_battle.unit_defeated.connect(_on_unit_defeated)
+	_battle.battle_ended.connect(_on_battle_ended)
+	_battle.run()
+
+
+func _build_layout() -> void:
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	var background := ColorRect.new()
+	background.color = Color(0.18, 0.18, 0.2)
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(background)
+
+	var margin := MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side: String in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 24)
+	add_child(margin)
+
+	var rows := VBoxContainer.new()
+	margin.add_child(rows)
+
+	# Field: party column, empty middle, enemy column.
+	var field := HBoxContainer.new()
+	field.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rows.add_child(field)
+	field.add_child(_make_side(_battle.party))
+	var middle := Control.new()
+	middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	field.add_child(middle)
+	field.add_child(_make_side(_battle.enemies))
+
+	# Bottom bar: message line and buttons.
+	_message = Label.new()
+	_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_message.add_theme_font_size_override("font_size", 22)
+	rows.add_child(_message)
+
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.custom_minimum_size.y = 56
+	rows.add_child(buttons)
+	_quick_button = _make_button("Quick Attack", buttons, _on_skill_pressed.bind(true))
+	_power_button = _make_button("Power Attack", buttons, _on_skill_pressed.bind(false))
+	_restart_button = _make_button("Play Again", buttons, get_tree().reload_current_scene)
+	_restart_button.hide()
+	_set_attack_buttons_enabled(false)
+
+
+func _make_side(units: Array[BattleUnit]) -> VBoxContainer:
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 16)
+	for unit: BattleUnit in units:
+		var panel := UnitPanel.new(unit)
+		if not unit.is_party:
+			panel.pressed.connect(_on_enemy_pressed.bind(unit))
+		column.add_child(panel)
+		_panels[unit] = panel
+	return column
+
+
+func _make_button(text: String, parent: Container, on_pressed: Callable) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.custom_minimum_size = Vector2(180, 48)
+	button.focus_mode = Control.FOCUS_NONE
+	button.pressed.connect(on_pressed)
+	parent.add_child(button)
+	return button
+
+
+# --- Player input ---
+
+func _on_party_turn_started(unit: BattleUnit) -> void:
+	_active_unit = unit
+	_chosen_skill = null
+	_panels[unit].set_active(true)
+	_message.text = "%s: choose an attack" % unit.display_name
+	_set_attack_buttons_enabled(true)
+	_set_targets_enabled(false)
+
+
+func _on_skill_pressed(quick: bool) -> void:
+	_chosen_skill = _active_unit.data.quick_attack if quick else _active_unit.data.power_attack
+	_message.text = "%s: %s. Click an enemy" % [_active_unit.display_name, _chosen_skill.display_name]
+	_set_targets_enabled(true)
+
+
+func _on_enemy_pressed(target: BattleUnit) -> void:
+	if _active_unit == null or _chosen_skill == null:
+		return
+	var user: BattleUnit = _active_unit
+	_panels[user].set_active(false)
+	_active_unit = null
+	_set_attack_buttons_enabled(false)
+	_set_targets_enabled(false)
+	_battle.submit_action(user, _chosen_skill, target)
+
+
+func _set_attack_buttons_enabled(enabled: bool) -> void:
+	_quick_button.disabled = not enabled
+	_power_button.disabled = not enabled
+
+
+func _set_targets_enabled(enabled: bool) -> void:
+	for unit: BattleUnit in _battle.enemies:
+		_panels[unit].disabled = not (enabled and unit.is_alive())
+
+
+# --- Battle events ---
+
+func _on_round_started(round_number: int) -> void:
+	_message.text = "Round %d" % round_number
+
+
+func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int) -> void:
+	_message.text = "%s uses %s on %s: %d damage!" % [user.display_name, skill.display_name, target.display_name, damage]
+
+
+func _on_unit_defeated(unit: BattleUnit) -> void:
+	_message.text += "  %s is defeated!" % unit.display_name
+
+
+func _on_battle_ended(party_won: bool) -> void:
+	_message.text = "VICTORY!" if party_won else "DEFEAT..."
+	_set_attack_buttons_enabled(false)
+	_quick_button.hide()
+	_power_button.hide()
+	_restart_button.show()

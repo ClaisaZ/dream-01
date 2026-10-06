@@ -219,6 +219,7 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Default battle background when a fight doesn't set one
 - [ ] Maybe: a small high/low roll on damage (right now every hit does the same damage)
 - [ ] Smarter enemy choices (right now enemies pick a random move and target)
+- [ ] Keyboard and controller controls in battle (right now mouse only)
 
 **Not assigned yet (art):**
 

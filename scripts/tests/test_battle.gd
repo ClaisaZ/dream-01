@@ -9,6 +9,7 @@ const SLIMES: EnemyGroup = preload("res://data/enemy_groups/test_slimes.tres")
 func _ready() -> void:
 	var party_data: Array[UnitData] = [HERO, HERO, HERO]
 	var battle := Battle.new(party_data, SLIMES)
+	battle.auto_party = true
 	battle.round_started.connect(_on_round_started)
 	battle.action_performed.connect(_on_action_performed)
 	battle.unit_defeated.connect(_on_unit_defeated)
