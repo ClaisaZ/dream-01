@@ -103,6 +103,8 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Equipment:** one weapon and one armor set per character. Each piece fits one character only, so each character upgrades in a straight line. Flat stat bonuses (weapons: ATK/MAG, sometimes SPD; armor: DEF/HP). Each boss beaten unlocks the next tier in the shop. The gear line lives on the character (`UnitData.weapons` / `armors`, index = tier) so gear never points back to its owner (avoids cyclic resources). Gear with special effects (crit, meter gain...) is a maybe-later; probably out of scope for a game this size.
 
+**Enemy groups:** 1–4 enemies per battle (`EnemyGroup.MAX_ENEMIES`); the same enemy can repeat (labeled A, B, C). Battle type NORMAL / ELITE / BOSS; bosses and elites are usually alone or special. Music: a default battle theme and boss theme picked by battle type, with an optional per-group override for story fights (audio is empty for now, hook it up later). Background: optional per group, else a default.
+
 **Leveling:** +1 to every stat and +5 HP per level, plus 1 extra stat point the player assigns. Story moments grant new skills or passives. No catch-up XP for now.
 
 ## Build order for the combat prototype
@@ -132,5 +134,7 @@ Each step should leave the game playable.
 - Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit). `StatusEffect` script plus the five starting effects in `data/status_effects/` (buffs/debuffs: 3 turns, ±20%; stun: 1 turn).
 - `Item` script plus six starting items in `data/items/`.
 - `Equipment` script plus test gear (tiers 0–1) in `data/equipment/`, linked from `test_hero.tres`.
-- Next: EnemyGroup, then merge `feature/battle-data` into `dev`.
+- `feature/battle-data` merged into `dev` (PR #2).
+- Working on `feature/enemy-group`: `EnemyGroup` script, `data/enemies/test_slime.tres`, `data/enemy_groups/test_slimes.tres`. This finishes build step 1 (data Resources).
+- Next: build step 2, the basic battle.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

@@ -180,7 +180,7 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Status effects (Stun, Attack up/down, Defense up/down)
 - [x] Items
 - [x] Weapons and armor
-- [ ] Enemy groups
+- [x] Enemy groups
 
 **Battles:**
 
@@ -215,6 +215,8 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Enemy AI settings: how smart each enemy is
 - [ ] Boss phases: what changes at each health threshold
 - [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)
+- [ ] Battle music: play the battle theme or boss theme by battle type, plus special songs for story fights
+- [ ] Default battle background when a fight doesn't set one
 
 **Not assigned yet (art):**
 
