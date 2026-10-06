@@ -97,7 +97,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Bosses:** immune to stun, not to debuffs. Phases at HP thresholds (more attacks per round, stronger attacks, and/or party debuffs). Wind-up attacks telegraphed one round ahead. Battle dialogue via short Dialogic timelines on phase changes and reactions. Each phase is data on the boss, not new code.
 
-**Items:** HP potion, skill meter boost, and permanent stat potions (ATK, DEF, SPD, MAG) that are rare rewards, not sold in shops.
+**Items:** HP potion, skill meter boost, and permanent stat potions (ATK, DEF, SPD, MAG) that are rare rewards, not sold in shops. HP potion heals 30% of max HP (in and out of battle). Meter boost +50 (battle only, since the meter resets each battle). Stat potions +1, outside battle only. Using an item takes the character's turn at priority +2 (before quick attacks). Prices are placeholders until the economy is designed.
 
 **Equipment:** one weapon and one armor set per character. Shops sell the next tier up.
 
@@ -126,5 +126,6 @@ Each step should leave the game playable.
 - Project created, folders set up, Git LFS configured, `dev` branch created.
 - Dialogic 2 installed and merged into `dev`.
 - Working on `feature/battle-data`: `UnitData` and `SkillData` scripts in `scripts/data/`. First data files: `data/skills/` (quick, power, special attack) and `data/units/test_hero.tres` (placeholder unit). `StatusEffect` script plus the five starting effects in `data/status_effects/` (buffs/debuffs: 3 turns, ±20%; stun: 1 turn).
-- Next: remaining data Resources (Item, Equipment, EnemyGroup).
+- `Item` script plus six starting items in `data/items/`.
+- Next: remaining data Resources (Equipment, EnemyGroup).
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.
