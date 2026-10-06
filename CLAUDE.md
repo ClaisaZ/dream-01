@@ -119,6 +119,7 @@ Each step should leave the game playable.
 - `main`: stable. Only updated from `dev` through a pull request when a playable build is ready. **Never commit or push to `main` directly.**
 - `dev`: where finished features come together.
 - `feature/<name>`: one branch per feature (e.g. `feature/battle-data`), branched from `dev`, merged back into `dev` through a pull request.
+- I open and merge pull requests myself on the GitHub website (no `gh` CLI login). When a feature is ready, push the branch and give me the compare link plus a short title and description to paste.
 - Before switching branches, remind me to save and close Godot (or reload from disk afterward).
 - Never commit `.godot/` or `/builds/`.
 - Short, clear commit messages describing what changed.
