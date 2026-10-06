@@ -6,6 +6,7 @@ extends RefCounted
 
 signal hp_changed(unit: BattleUnit, current_hp: int, max_hp: int)
 signal died(unit: BattleUnit)
+signal meter_changed(unit: BattleUnit, meter: int, meter_max: int)
 
 var data: UnitData
 ## Shown in battle, e.g. "Test Slime B" when the same enemy appears more than once.
@@ -18,6 +19,11 @@ var atk: int
 var def: int
 var spd: int
 var mag: int
+
+## Units without a meter (basic enemies) always stay at 0.
+var has_meter: bool
+var meter: int = 0
+var meter_max: int = 100
 
 
 func _init(unit_data: UnitData, on_party: bool, name_suffix: String = "") -> void:
@@ -38,10 +44,35 @@ func _init(unit_data: UnitData, on_party: bool, name_suffix: String = "") -> voi
 	if not unit_data.armors.is_empty():
 		_add_gear_bonuses(unit_data.armors[0])
 	current_hp = max_hp
+	has_meter = unit_data.has_skill_meter
 
 
 func is_alive() -> bool:
 	return current_hp > 0
+
+
+func is_meter_full() -> bool:
+	return has_meter and meter >= meter_max
+
+
+## Can this unit use the skill right now? Specials need a full meter.
+func can_use(skill: SkillData) -> bool:
+	return skill != null and (not skill.requires_full_meter or is_meter_full())
+
+
+## Adds meter (capped at full). Does nothing for units without a meter.
+func add_meter(amount: int) -> void:
+	if not has_meter or amount == 0:
+		return
+	meter = clampi(meter + amount, 0, meter_max)
+	meter_changed.emit(self, meter, meter_max)
+
+
+func empty_meter() -> void:
+	if not has_meter:
+		return
+	meter = 0
+	meter_changed.emit(self, meter, meter_max)
 
 
 ## Lowers HP (never below 0) and returns the damage actually taken.

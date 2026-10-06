@@ -18,6 +18,7 @@ signal battle_ended(party_won: bool)
 
 ## Safety stop so a bug can never loop forever.
 const MAX_ROUNDS: int = 100
+const RULES: BattleRules = preload("res://data/battle_rules.tres")
 
 var party: Array[BattleUnit] = []
 var enemies: Array[BattleUnit] = []
@@ -98,19 +99,28 @@ func _run_round() -> void:
 		if not action.target.is_alive():
 			action.target = _random_alive(_opponents_of(action.user))
 		var damage: int = action.user.damage_against(action.target, action.skill)
+		if action.skill.requires_full_meter:
+			action.user.empty_meter()
+		action.user.add_meter(action.skill.skill_meter_gain)
 		action_performed.emit(action.user, action.target, action.skill, damage)
 		action.target.take_damage(damage)
+		if action.target.is_alive():
+			action.target.add_meter(RULES.meter_gain_when_hit)
 		if action_delay > 0.0:
 			await (Engine.get_main_loop() as SceneTree).create_timer(action_delay).timeout
 
 
-## Prototype choice for both sides: random Quick/Power attack, random living target.
+## Prototype choice: the special as soon as the meter is full, otherwise a
+## random Quick/Power attack. Always a random living target.
 func _choose_action(unit: BattleUnit) -> Action:
+	var target: BattleUnit = _random_alive(_opponents_of(unit))
+	if unit.can_use(unit.data.special_attack):
+		return Action.new(unit, unit.data.special_attack, target)
 	var skills: Array[SkillData] = []
 	for skill: SkillData in [unit.data.quick_attack, unit.data.power_attack]:
 		if skill != null:
 			skills.append(skill)
-	return Action.new(unit, skills.pick_random(), _random_alive(_opponents_of(unit)))
+	return Action.new(unit, skills.pick_random(), target)
 
 
 ## Turn order: higher priority first, then higher SPD, then the party wins ties.
@@ -144,7 +154,9 @@ func _make_units(templates: Array[UnitData], on_party: bool) -> Array[BattleUnit
 		if templates.count(template) > 1:
 			suffix = char("A".unicode_at(0) + seen.get(template, 0))
 			seen[template] = seen.get(template, 0) + 1
-		units.append(BattleUnit.new(template, on_party, suffix))
+		var unit := BattleUnit.new(template, on_party, suffix)
+		unit.meter_max = RULES.meter_max
+		units.append(unit)
 	return units
 
 
