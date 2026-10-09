@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_status")
-display_name = "DEF Up"
-description = "Defense raised by 20%."
-short_name = "DEF+"
+display_name = "Bleed"
+description = "Loses 5% of max HP at the end of each round."
+short_name = "BLD"
 duration = 3
-def_percent = 20
+hp_percent_per_turn = -5

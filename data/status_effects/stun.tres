@@ -6,5 +6,6 @@
 script = ExtResource("1_status")
 display_name = "Stun"
 description = "Skips their next turn."
+short_name = "STN"
 duration = 1
 skips_turn = true

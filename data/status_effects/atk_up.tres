@@ -6,5 +6,6 @@
 script = ExtResource("1_status")
 display_name = "ATK Up"
 description = "Attack raised by 20%."
+short_name = "ATK+"
 duration = 3
 atk_percent = 20

@@ -10,6 +10,11 @@ extends Resource
 ## drops: at half HP they get half of it. Enemies never get this bonus.
 @export_range(0.0, 1.0, 0.01) var crit_low_hp_bonus: float = 0.20
 
+@export_group("Status Effects")
+## Each stun a unit receives multiplies the chance of stunning it again this
+## battle by this (0.5 = halves it every time).
+@export_range(0.0, 1.0, 0.05) var stun_chance_after_stun: float = 0.5
+
 @export_group("Defend")
 ## A defending unit's DEF is multiplied by this for the rest of the round.
 @export var defend_def_multiplier: float = 1.5
