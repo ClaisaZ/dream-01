@@ -4,12 +4,15 @@ extends Node
 
 const HERO: UnitData = preload("res://data/units/test_hero.tres")
 const SLIMES: EnemyGroup = preload("res://data/enemy_groups/test_slimes.tres")
+const TWIN_STRIKE: TagTeamData = preload("res://data/tag_teams/test_twin_strike.tres")
 
 
 func _ready() -> void:
 	var party_data: Array[UnitData] = [HERO, HERO, HERO]
 	var battle := Battle.new(party_data, SLIMES)
 	battle.auto_party = true
+	battle.unlocked_tag_teams = [TWIN_STRIKE]
+	battle.tag_team_performed.connect(_on_tag_team_performed)
 	battle.round_started.connect(_on_round_started)
 	battle.action_performed.connect(_on_action_performed)
 	battle.unit_defeated.connect(_on_unit_defeated)
@@ -25,6 +28,11 @@ func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData
 	print("%s%s uses %s on %s: %d damage (%d HP left)" % [
 		"CRITICAL! " if critical else "", user.display_name, skill.display_name, target.display_name,
 		damage, maxi(0, target.current_hp - damage)])
+
+
+func _on_tag_team_performed(first: BattleUnit, second: BattleUnit, target: BattleUnit, tag_team: TagTeamData, damage: int) -> void:
+	print("  ** TAG-TEAM! %s + %s: %s on %s for %d damage" % [
+		first.display_name, second.display_name, tag_team.display_name, target.display_name, damage])
 
 
 func _on_unit_defeated(unit: BattleUnit) -> void:

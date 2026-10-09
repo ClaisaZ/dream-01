@@ -97,7 +97,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Crits:** the chance is hidden (no numbers shown), but a crit shows a "Critical hit!" message (an icon later). Party base chance 10% (`UnitData.base_crit_chance`), rising smoothly as HP drops up to +20% near 0 HP (`BattleRules.crit_low_hp_bonus`), so 20% at half HP and about 30% near 0. Enemies: flat 3%, no low-HP bonus. Crits deal ×1.5 damage (`BattleRules.crit_damage_multiplier`), double the meter gained from being hit (+10), can happen on specials too, and will make tag-teams more likely.
 
-**Tag-team attacks:** when two party members hit the same enemy in the same round, they can link into a tag-team attack. Each pair's tag-team is **unlocked by story events**, not available from the start. Trigger chance rises on crits, when the attacker is low on HP, or when the enemy is low on HP. (Exact rules to be tuned in the prototype.)
+**Tag-team attacks:** when two party members hit the same enemy with attacks (Quick/Power/Special) in the same round, the second hit rolls once for a tag-team, which then fires automatically as a bonus attack. Chance (`BattleRules`): 15% base, +15% if that hit was a crit, +10% if the attacker is below 30% HP, +10% if the enemy is below 30% HP. At most one per round; both must be standing; the enemy must still be alive; enemies never tag-team; tag-teams fill no meter (for anyone). Every pair has its own `TagTeamData` file in `data/tag_teams/` (the two members, a name, and an attack `SkillData`, e.g. power 2.5 and an optional effect); damage uses the pair's average ATK (MAG for magic). Each pair's tag-team is **unlocked by story events**; until game progress exists, the test battle treats `test_twin_strike.tres` as unlocked. The timed button press for tag-teams comes in build step 4.
 
 **Battle feel:** normal attacks use code-only effects (Tweens: step forward, attack pose, hit flash, shake, damage numbers, screen shake, particles). Specials and tag-teams get custom effect sprites. The list lives in the bible under "Battle feel".
 
@@ -152,6 +152,6 @@ Each step should leave the game playable.
 - Skill meter + special attack merged into `dev` (PR #6).
 - Defend merged into `dev` (PR #7).
 - Items in battle merged into `dev` (PR #8). README written (carried to the next branch).
-- Critical hits on `feature/crits` (pushed, PR pending).
-- Working on `feature/status-effects` (branched from `feature/crits`).
+- Critical hits (PR #9) and status effects (PR #10) merged into `dev`.
+- Working on `feature/tag-teams`.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.
