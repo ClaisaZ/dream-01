@@ -5,8 +5,9 @@ extends RefCounted
 ## screen (or a test scene) listens and shows it.
 ##
 ## Party members wait for the player (see party_turn_started / submit_action /
-## submit_item), unless auto_party is on. Items come from the party's shared bag. Enemies pick a random Quick or Power attack on a
-## random living target.
+## submit_item), unless auto_party is on. Items come from the party's shared bag.
+## Enemies pick a random Quick or Power attack on a random living target.
+## Skills can cause status effects (Bleed, Poison, Stun, stat ups/downs).
 
 signal round_started(round_number: int)
 ## A party member needs a choice. Answer with submit_action().
@@ -19,6 +20,11 @@ signal unit_defended(unit: BattleUnit)
 signal item_used(user: BattleUnit, target: BattleUnit, item: Item, amount: int)
 ## The item had no valid target left, so it went back in the bag.
 signal item_returned(user: BattleUnit, item: Item)
+signal effect_applied(unit: BattleUnit, effect: StatusEffect)
+## End-of-round HP change from an effect. amount < 0 = damage (bleed, poison), > 0 = healing.
+signal effect_hp_changed(unit: BattleUnit, effect: StatusEffect, amount: int)
+## The unit is stunned and loses this turn.
+signal unit_stunned(unit: BattleUnit)
 signal battle_ended(party_won: bool)
 
 ## Safety stop so a bug can never loop forever.
@@ -93,7 +99,8 @@ func submit_item(user: BattleUnit, item: Item, target: BattleUnit) -> void:
 func usable_items() -> Array[Item]:
 	var usable: Array[Item] = []
 	for item: Item in item_counts:
-		if item.usable_in_battle and item_counts[item] > 0 				and party.any(func(u: BattleUnit) -> bool: return can_use_item_on(item, u)):
+		if item.usable_in_battle and item_counts[item] > 0 \
+				and party.any(func(u: BattleUnit) -> bool: return can_use_item_on(item, u)):
 			usable.append(item)
 	return usable
 
@@ -127,7 +134,8 @@ func _run_round() -> void:
 	for unit: BattleUnit in party:
 		if not unit.is_alive():
 			continue
-		if auto_party:
+		# A stunned party member isn't asked: their turn will be skipped anyway.
+		if auto_party or unit.is_stunned():
 			actions.append(_choose_action(unit))
 		else:
 			party_turn_started.emit(unit)
@@ -141,9 +149,13 @@ func _run_round() -> void:
 	for action: Action in actions:
 		if is_over():
 			return
-		if not action.user.is_alive():
+		if not action.user.is_alive() or action.user.is_stunned():
 			if action.item != null:
 				item_counts[action.item] += 1  # never used, so it goes back in the bag
+			if action.user.is_alive():
+				action.user.consume_stun()
+				unit_stunned.emit(action.user)
+				await _pause()
 			continue
 		if action.item != null:
 			_use_item(action)
@@ -169,7 +181,44 @@ func _run_round() -> void:
 		if action.target.is_alive():
 			var hit_gain: float = RULES.meter_gain_when_hit * (RULES.meter_crit_multiplier if critical else 1.0)
 			action.target.add_meter(roundi(hit_gain))
+		_try_inflict(action)
 		await _pause()
+
+	await _end_of_round_effects()
+
+
+## Rolls the skill's status effect chance and applies it to the target (or the
+## user, for self-buffs). Each stun a unit has received lowers its stun chance.
+func _try_inflict(action: Action) -> void:
+	var effect: StatusEffect = action.skill.inflicts
+	if effect == null:
+		return
+	var recipient: BattleUnit = action.user if action.skill.inflict_on_user else action.target
+	if not recipient.is_alive():
+		return
+	var chance: float = action.skill.inflict_chance
+	if effect.skips_turn:
+		chance *= pow(RULES.stun_chance_after_stun, recipient.stuns_received)
+	if randf() < chance and recipient.apply_effect(effect):
+		effect_applied.emit(recipient, effect)
+
+
+## Bleed, poison, regen... change HP, then every effect counts down one round.
+func _end_of_round_effects() -> void:
+	for unit: BattleUnit in party + enemies:
+		if not unit.is_alive():
+			continue
+		for effect: StatusEffect in unit.effects.keys():
+			if effect.hp_percent_per_turn == 0 or not unit.is_alive():
+				continue
+			var amount: int = maxi(1, roundi(unit.max_hp * absi(effect.hp_percent_per_turn) / 100.0))
+			if effect.hp_percent_per_turn < 0:
+				effect_hp_changed.emit(unit, effect, -amount)
+				unit.take_damage(amount)
+			else:
+				effect_hp_changed.emit(unit, effect, unit.heal(amount))
+			await _pause()
+		unit.tick_effects()
 
 
 func _use_item(action: Action) -> void:
@@ -209,8 +258,8 @@ func _choose_action(unit: BattleUnit) -> Action:
 func _goes_before(a: Action, b: Action) -> bool:
 	if a.priority() != b.priority():
 		return a.priority() > b.priority()
-	if a.user.spd != b.user.spd:
-		return a.user.spd > b.user.spd
+	if a.user.current_spd() != b.user.current_spd():
+		return a.user.current_spd() > b.user.current_spd()
 	return a.user.is_party and not b.user.is_party
 
 

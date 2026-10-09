@@ -59,8 +59,10 @@ Everyone acts once per round. Faster characters go first, but some moves jump th
 
 There's no running away: every battle is part of the story.
 
+**Every battle starts fresh:** full HP, empty skill meter, no status effects, and everyone who fell is back. Later there may be back-to-back battles where damage carries over.
+
 - **Skill meter:** fills as you attack, get hit (double on a critical hit), or help a friend. When full, the special attack unlocks. Empty at the start of every battle. Elite enemies and bosses have one too.
-- **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down. Each lasts a few turns.
+- **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down, Bleed and Poison (lose a little HP each round). Each lasts a few rounds and they don't stack. Attacks can cause them, so every character and monster fights a bit differently.
 - **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely. You never see the odds, but you'll know when one lands.
 - **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
@@ -89,6 +91,7 @@ Your writing decides what Joli and Macy draw, so the first tasks are the ones th
 **Then, for battles:**
 
 - [ ] Which story moments unlock each pair's tag-team attack
+- [ ] Each character's and monster's signature effect (for example, the hero's attacks cause Bleed, a snake's bite causes Poison)
 - [ ] What bosses say during fights (phase changes, reactions)
 - [ ] Scene scripts
 
@@ -191,7 +194,7 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Defend
 - [x] Items in battle
 - [x] Critical hits
-- [ ] Status effects
+- [x] Status effects (Stun, ATK/DEF up and down, Bleed, Poison)
 - [ ] Tag-team attacks
 - [ ] Smarter enemies, boss phases
 - [ ] Timed cool moves
@@ -210,13 +213,20 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 
 **Later (gaps to fill when each feature is built):**
 
-- [ ] Skills that heal, buff, or cause status effects (Stun, Attack down...)
+- [x] Attacks can cause status effects (Stun, Attack down, Bleed, Poison...)
+- [ ] Skills that heal or buff allies
 - [x] Defend: how much it raises DEF
 - [ ] Skill meter: filling it from taking damage and helping allies
-- [ ] Per-turn effects like poison and regen (only a simple version exists)
+- [x] Per-turn effects like poison and bleed (simple version)
+- [ ] Regen and other per-turn effects, if the team wants them
+- [ ] Passive slot for every character (maybe hidden, or a small tooltip)
+- [ ] Healer-type skills beyond Quick and Power, once the world and characters exist
+- [ ] Real status icons instead of the colored placeholder squares
 - [ ] Levels and XP: character levels, XP needed per level, XP from enemies
 - [ ] Money: rewards from battles, connect shop prices
 - [ ] Real party bag from game progress (battles use a test bag for now)
+- [ ] Back-to-back battles where HP carries over (e.g. a gauntlet before a boss)
+- [ ] Decide: can HP potions be used outside battle? (only useful if back-to-back battles exist)
 - [ ] Enemy AI settings: how smart each enemy is
 - [ ] Boss phases: what changes at each health threshold
 - [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)
@@ -244,7 +254,7 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 
 **Not assigned yet (art):**
 
-- Status effect icons: `icon_stun.png`, `icon_atk_up.png`, `icon_atk_down.png`, `icon_def_up.png`, `icon_def_down.png`
+- Status effect icons: `icon_stun.png`, `icon_atk_up.png`, `icon_atk_down.png`, `icon_def_up.png`, `icon_def_down.png`, `icon_bleed.png`, `icon_poison.png`
 - Battle screen pieces: action menu, HP bar, skill meter bar, target cursor
 - Backgrounds for battles and story scenes: `bg_<place>_<variant>.png`
 

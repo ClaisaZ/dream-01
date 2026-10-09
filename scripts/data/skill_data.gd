@@ -23,3 +23,11 @@ enum TargetType { SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF }
 @export var skill_meter_gain: float = 0.0
 ## True for special attacks: needs a full skill meter and empties it.
 @export var requires_full_meter: bool = false
+
+@export_group("Status Effect")
+## Optional effect this skill can cause, e.g. Bleed or Poison. Leave empty for none.
+@export var inflicts: StatusEffect
+## Chance to cause it on a hit (0.25 = 25%).
+@export_range(0.0, 1.0, 0.01) var inflict_chance: float = 0.0
+## Off = the target gets it (debuffs, poison...). On = the user gets it (self-buffs).
+@export var inflict_on_user: bool = false

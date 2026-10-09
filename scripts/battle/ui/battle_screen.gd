@@ -48,6 +48,9 @@ func _ready() -> void:
 	_battle.unit_defended.connect(_on_unit_defended)
 	_battle.item_used.connect(_on_item_used)
 	_battle.item_returned.connect(_on_item_returned)
+	_battle.effect_applied.connect(_on_effect_applied)
+	_battle.effect_hp_changed.connect(_on_effect_hp_changed)
+	_battle.unit_stunned.connect(_on_unit_stunned)
 	_battle.battle_ended.connect(_on_battle_ended)
 	_battle.run()
 
@@ -260,6 +263,21 @@ func _on_item_used(user: BattleUnit, target: BattleUnit, item: Item, amount: int
 
 func _on_item_returned(user: BattleUnit, item: Item) -> void:
 	_message.text = "%s's %s had no one to use it on and went back in the bag" % [user.display_name, item.display_name]
+
+
+func _on_effect_applied(unit: BattleUnit, effect: StatusEffect) -> void:
+	_message.text += "  %s gets %s!" % [unit.display_name, effect.display_name]
+
+
+func _on_effect_hp_changed(unit: BattleUnit, effect: StatusEffect, amount: int) -> void:
+	if amount < 0:
+		_message.text = "%s takes %d damage from %s" % [unit.display_name, -amount, effect.display_name]
+	else:
+		_message.text = "%s recovers %d HP from %s" % [unit.display_name, amount, effect.display_name]
+
+
+func _on_unit_stunned(unit: BattleUnit) -> void:
+	_message.text = "%s is stunned and can't move!" % unit.display_name
 
 
 func _on_unit_defeated(unit: BattleUnit) -> void:

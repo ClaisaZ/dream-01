@@ -71,6 +71,8 @@ Asset naming: `type_name_variant.png`, e.g. `portrait_mira_happy.png`, `bg_fores
 
 **Party:** 3 members in battle (for now, testing uses 3 copies of Test Hero).
 
+**Between battles:** every battle is separate. The party starts each battle at full HP with an empty meter and no status effects, and party members who fell in the last battle are back. Exception (later): back-to-back battles that carry HP over. Boss phases happen inside one battle, so HP carries through them naturally. **Open question:** HP potions are marked usable outside battle, which only matters if back-to-back battles exist; decide when designing those (or the party menu).
+
 **Special priority:** party specials are +1 so a saved-up special lands on the chosen target instead of being redirected. Each enemy special sets its own priority (elites likely 0; boss timing is handled by wind-ups).
 
 **Battle screen:** side view, party on the left, enemies on the right. Mouse only for now (click an attack, then click an enemy); keyboard/controller later. Layout stretches to any window size until the base resolution is decided.
@@ -101,7 +103,9 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Timed cool moves:** only special attacks and tag-teams get the pose + timed button press. Normal attacks stay fast. Build this last.
 
-**Status effects (starting set):** Stun (skip next turn), ATK up/down, DEF up/down. Each lasts a set number of turns. A unit can't be stunned two rounds in a row. Every status effect is its own `.tres` file built from the same fields (duration, stat changes, skips turn, per-turn effect, icon). Stat changes are percentages (e.g. ATK up = +20%). The per-turn effect is a simple placeholder for now (HP % per turn); **revisit and expand it later** (poison, regen, etc.).
+**Status effects:** Stun (skip next turn), ATK up/down, DEF up/down, Bleed and Poison (lose 5% max HP at the end of each round). Every status effect is its own `.tres` file built from the same fields (duration, stat changes, skips turn, per-turn HP %, icon, short name). Stat changes are percentages (e.g. ATK up = +20%). Effects last 3 rounds by default (Stun: 1 skipped turn), counted down at the end of each round; Stun counts down only when a turn is actually skipped. **No stacking:** the same effect again resets its timer, and a new effect replaces any old one that changes the same stat (ATK down replaces ATK up). Stun: bosses can be immune (`UnitData.immune_to_stun`); each stun a unit receives halves the chance of stunning it again that battle (`BattleRules.stun_chance_after_stun`). End-of-round HP loss gives no meter.
+
+**Where effects come from:** attacks carry them, so every character and monster can feel different (e.g. the main character's attacks may cause Bleed, a snake's bite Poison). Each skill has an optional effect, a chance, and whether it hits the target or the user (self-buffs). Healer-type characters will have their own skills beyond Quick/Power; designed with Rachel once the world exists. **Passives:** a passive slot per character is planned (maybe hidden, or a small tooltip). Ask me before designing either. Test units use test-only skills (`data/skills/test_*.tres`). UI: a small placeholder icon per effect (colored square with the short name); hover for name, description, rounds left.
 
 **Enemy AI:** for the prototype, a random move on a random target. Planned: weighted randomness. Each move and target gets a score (strong attacks and low-HP targets score higher), then the enemy picks with some randomness. How "smart" each enemy is lives in its data file. Maybe later: a front/back-line formation.
 
@@ -148,5 +152,6 @@ Each step should leave the game playable.
 - Skill meter + special attack merged into `dev` (PR #6).
 - Defend merged into `dev` (PR #7).
 - Items in battle merged into `dev` (PR #8). README written (carried to the next branch).
-- Working on `feature/crits`: critical hits.
+- Critical hits on `feature/crits` (pushed, PR pending).
+- Working on `feature/status-effects` (branched from `feature/crits`).
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

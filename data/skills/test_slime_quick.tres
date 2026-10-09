@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" uid="uid://d0maagdhx3fdg" path="res://scripts/data/skill_data.gd" id="1_skill"]
+[ext_resource type="Resource" path="res://data/status_effects/poison.tres" id="2_effect"]
+
+[resource]
+script = ExtResource("1_skill")
+display_name = "Poison Bite"
+description = "A quick bite. 25% chance to cause Poison."
+power = 0.8
+priority = 1
+skill_meter_gain = 10.0
+inflicts = ExtResource("2_effect")
+inflict_chance = 0.25
+inflict_on_user = false

@@ -8,18 +8,27 @@ signal hp_changed(unit: BattleUnit, current_hp: int, max_hp: int)
 signal died(unit: BattleUnit)
 signal meter_changed(unit: BattleUnit, meter: int, meter_max: int)
 signal defending_changed(unit: BattleUnit, defending: bool)
+## Status effects were added, removed, or counted down.
+signal effects_changed(unit: BattleUnit)
 
 var data: UnitData
 ## Shown in battle, e.g. "Test Slime B" when the same enemy appears more than once.
 var display_name: String
 var is_party: bool
 
+## Base stats (template + gear). Status effects adjust them through
+## current_atk() / current_def() / current_spd() / current_mag().
 var max_hp: int
 var current_hp: int
 var atk: int
 var def: int
 var spd: int
 var mag: int
+
+## Active status effects -> rounds left (for Stun: turns left to skip).
+var effects: Dictionary[StatusEffect, int] = {}
+## How many times this unit was stunned this battle (each one lowers the next chance).
+var stuns_received: int = 0
 
 ## Units without a meter (basic enemies) always stay at 0.
 var has_meter: bool
@@ -83,9 +92,79 @@ func set_defending(value: bool) -> void:
 	defending_changed.emit(self, defending)
 
 
-## DEF used when this unit is hit (boosted while defending).
+## DEF used when this unit is hit: status effects, then the Defend boost.
 func effective_def() -> int:
-	return roundi(def * defend_multiplier) if defending else def
+	return roundi(current_def() * defend_multiplier) if defending else current_def()
+
+
+func current_atk() -> int:
+	return _with_effects(atk, &"atk_percent")
+
+
+func current_def() -> int:
+	return _with_effects(def, &"def_percent")
+
+
+func current_spd() -> int:
+	return _with_effects(spd, &"spd_percent")
+
+
+func current_mag() -> int:
+	return _with_effects(mag, &"mag_percent")
+
+
+## Adds a status effect (or resets its timer if the unit already has it).
+## No stacking: an effect that changes the same stat as this one is removed first.
+## Returns false if the unit is immune (bosses and Stun).
+func apply_effect(effect: StatusEffect) -> bool:
+	if effect.skips_turn and data.immune_to_stun:
+		return false
+	for old: StatusEffect in effects.keys():
+		if old != effect and old.shares_stat_with(effect):
+			effects.erase(old)
+	effects[effect] = effect.duration
+	if effect.skips_turn:
+		stuns_received += 1
+	effects_changed.emit(self)
+	return true
+
+
+func is_stunned() -> bool:
+	return effects.keys().any(func(e: StatusEffect) -> bool: return e.skips_turn)
+
+
+## Uses up one skipped turn from a Stun-like effect (called when the turn is skipped).
+func consume_stun() -> void:
+	for effect: StatusEffect in effects.keys():
+		if effect.skips_turn:
+			effects[effect] -= 1
+			if effects[effect] <= 0:
+				effects.erase(effect)
+	effects_changed.emit(self)
+
+
+## End of round: counts every effect down by one and removes finished ones.
+## Stun-like effects only count down when a turn is actually skipped.
+func tick_effects() -> void:
+	if effects.is_empty():
+		return
+	for effect: StatusEffect in effects.keys():
+		if effect.skips_turn:
+			continue
+		effects[effect] -= 1
+		if effects[effect] <= 0:
+			effects.erase(effect)
+	effects_changed.emit(self)
+
+
+## Applies a status effect's percent changes to one base stat.
+func _with_effects(base: int, percent_field: StringName) -> int:
+	var percent: int = 0
+	for effect: StatusEffect in effects:
+		percent += effect.get(percent_field)
+	if percent == 0:
+		return base
+	return maxi(0, roundi(base * (1.0 + percent / 100.0)))
 
 
 func empty_meter() -> void:
@@ -124,7 +203,7 @@ func crit_chance() -> float:
 ## How much damage this unit's skill would deal to the target.
 ## multiplier scales the skill's power (e.g. 1.5 for a critical hit).
 func damage_against(target: BattleUnit, skill: SkillData, multiplier: float = 1.0) -> int:
-	var attack_stat: int = mag if skill.damage_type == SkillData.DamageType.MAGIC else atk
+	var attack_stat: int = current_mag() if skill.damage_type == SkillData.DamageType.MAGIC else current_atk()
 	return calculate_damage(skill.power * multiplier, attack_stat, target.effective_def())
 
 
