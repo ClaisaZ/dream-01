@@ -12,7 +12,7 @@ signal round_started(round_number: int)
 ## A party member needs a choice. Answer with submit_action().
 signal party_turn_started(unit: BattleUnit)
 signal _action_submitted
-signal action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int)
+signal action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int, critical: bool)
 signal unit_defeated(unit: BattleUnit)
 signal unit_defended(unit: BattleUnit)
 ## amount = HP restored or meter added, depending on the item.
@@ -158,14 +158,17 @@ func _run_round() -> void:
 		# If the chosen target already fell this round, hit someone else on that side.
 		if not action.target.is_alive():
 			action.target = _random_alive(_opponents_of(action.user))
-		var damage: int = action.user.damage_against(action.target, action.skill)
+		var critical: bool = randf() < action.user.crit_chance()
+		var multiplier: float = RULES.crit_damage_multiplier if critical else 1.0
+		var damage: int = action.user.damage_against(action.target, action.skill, multiplier)
 		if action.skill.requires_full_meter:
 			action.user.empty_meter()
 		action.user.add_meter(action.skill.skill_meter_gain)
-		action_performed.emit(action.user, action.target, action.skill, damage)
+		action_performed.emit(action.user, action.target, action.skill, damage, critical)
 		action.target.take_damage(damage)
 		if action.target.is_alive():
-			action.target.add_meter(RULES.meter_gain_when_hit)
+			var hit_gain: float = RULES.meter_gain_when_hit * (RULES.meter_crit_multiplier if critical else 1.0)
+			action.target.add_meter(roundi(hit_gain))
 		await _pause()
 
 
@@ -272,6 +275,7 @@ func _make_units(templates: Array[UnitData], on_party: bool) -> Array[BattleUnit
 		var unit := BattleUnit.new(template, on_party, suffix)
 		unit.meter_max = RULES.meter_max
 		unit.defend_multiplier = RULES.defend_def_multiplier
+		unit.crit_low_hp_bonus = RULES.crit_low_hp_bonus
 		units.append(unit)
 	return units
 

@@ -14,5 +14,6 @@ atk = 8
 def = 6
 spd = 8
 mag = 0
+base_crit_chance = 0.03
 quick_attack = ExtResource("2_quick")
 power_attack = ExtResource("3_power")

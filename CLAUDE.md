@@ -93,7 +93,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Defend:** DEF ×1.5 for the rest of the round (`BattleRules.defend_def_multiplier`). Priority +2, so it protects for the whole round. Defending gives no meter itself, but getting hit while defending gives the normal +5. Defend is `data/skills/defend.tres`. Enemies don't defend (yet).
 
-**Crits:** hidden from the player. Each character has a small base crit chance that rises as their HP drops. Enemies can crit too, with a very low chance. Crits deal ×1.5 damage and make tag-teams more likely.
+**Crits:** the chance is hidden (no numbers shown), but a crit shows a "Critical hit!" message (an icon later). Party base chance 10% (`UnitData.base_crit_chance`), rising smoothly as HP drops up to +20% near 0 HP (`BattleRules.crit_low_hp_bonus`), so 20% at half HP and about 30% near 0. Enemies: flat 3%, no low-HP bonus. Crits deal ×1.5 damage (`BattleRules.crit_damage_multiplier`), double the meter gained from being hit (+10), can happen on specials too, and will make tag-teams more likely.
 
 **Tag-team attacks:** when two party members hit the same enemy in the same round, they can link into a tag-team attack. Each pair's tag-team is **unlocked by story events**, not available from the start. Trigger chance rises on crits, when the attacker is low on HP, or when the enemy is low on HP. (Exact rules to be tuned in the prototype.)
 
@@ -147,5 +147,6 @@ Each step should leave the game playable.
 - Build step 2 done: `BattleUnit`, `Battle`, gray-box battle screen (`scenes/battle/battle_screen.tscn`), bare title screen (`scenes/menus/title_screen.tscn`, the main scene). Merged into `dev` (PR #5).
 - Skill meter + special attack merged into `dev` (PR #6).
 - Defend merged into `dev` (PR #7).
-- Working on `feature/battle-items`: shared item bag and using items in battle.
+- Items in battle merged into `dev` (PR #8). README written (carried to the next branch).
+- Working on `feature/crits`: critical hits.
 - Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

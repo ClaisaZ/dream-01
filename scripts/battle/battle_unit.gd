@@ -26,6 +26,9 @@ var has_meter: bool
 var meter: int = 0
 var meter_max: int = 100
 
+## Hidden. Party members gain up to this much extra crit chance as HP drops (set by Battle).
+var crit_low_hp_bonus: float = 0.0
+
 ## While defending, DEF counts as def × defend_multiplier (set by Battle).
 var defending: bool = false
 var defend_multiplier: float = 1.5
@@ -110,10 +113,19 @@ func heal(amount: int) -> int:
 	return healed
 
 
+## Chance this unit's next hit is critical. Base chance, plus (party only) a
+## bonus that grows as HP drops: none at full HP, the whole bonus at 0 HP.
+func crit_chance() -> float:
+	var missing_hp: float = 1.0 - float(current_hp) / max_hp
+	var bonus: float = crit_low_hp_bonus * missing_hp if is_party else 0.0
+	return data.base_crit_chance + bonus
+
+
 ## How much damage this unit's skill would deal to the target.
-func damage_against(target: BattleUnit, skill: SkillData) -> int:
+## multiplier scales the skill's power (e.g. 1.5 for a critical hit).
+func damage_against(target: BattleUnit, skill: SkillData, multiplier: float = 1.0) -> int:
 	var attack_stat: int = mag if skill.damage_type == SkillData.DamageType.MAGIC else atk
-	return calculate_damage(skill.power, attack_stat, target.effective_def())
+	return calculate_damage(skill.power * multiplier, attack_stat, target.effective_def())
 
 
 ## damage = power × ATK × ATK ÷ (ATK + DEF), rounded, minimum 1.

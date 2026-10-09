@@ -21,10 +21,10 @@ func _on_round_started(round_number: int) -> void:
 	print("=== Round %d ===" % round_number)
 
 
-func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int) -> void:
-	print("%s uses %s on %s: %d damage (%d HP left)" % [
-		user.display_name, skill.display_name, target.display_name, damage,
-		maxi(0, target.current_hp - damage)])
+func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int, critical: bool) -> void:
+	print("%s%s uses %s on %s: %d damage (%d HP left)" % [
+		"CRITICAL! " if critical else "", user.display_name, skill.display_name, target.display_name,
+		damage, maxi(0, target.current_hp - damage)])
 
 
 func _on_unit_defeated(unit: BattleUnit) -> void:

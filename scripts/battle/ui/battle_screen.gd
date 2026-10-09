@@ -243,8 +243,10 @@ func _on_round_started(round_number: int) -> void:
 	_message.text = "Round %d" % round_number
 
 
-func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int) -> void:
+func _on_action_performed(user: BattleUnit, target: BattleUnit, skill: SkillData, damage: int, critical: bool) -> void:
 	_message.text = "%s uses %s on %s: %d damage!" % [user.display_name, skill.display_name, target.display_name, damage]
+	if critical:
+		_message.text = "CRITICAL HIT! " + _message.text
 
 
 func _on_unit_defended(unit: BattleUnit) -> void:
