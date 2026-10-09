@@ -61,7 +61,7 @@ There's no running away: every battle is part of the story.
 
 - **Skill meter:** fills as you attack, get hit (double on a critical hit), or help a friend. When full, the special attack unlocks. Empty at the start of every battle. Elite enemies and bosses have one too.
 - **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down. Each lasts a few turns.
-- **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely.
+- **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely. You never see the odds, but you'll know when one lands.
 - **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
 - **Items:** one shared bag for the party. HP potion (heals 30%), meter boost, and rare potions that raise a stat forever. No revive items: a fallen party member stays out for the rest of the fight.
@@ -190,7 +190,8 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Skill meter and special attacks
 - [x] Defend
 - [x] Items in battle
-- [ ] Status effects and critical hits
+- [x] Critical hits
+- [ ] Status effects
 - [ ] Tag-team attacks
 - [ ] Smarter enemies, boss phases
 - [ ] Timed cool moves
@@ -225,7 +226,8 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Smarter enemy choices (right now enemies pick a random move and target)
 - [ ] Keyboard and controller controls in battle (right now mouse only)
 - [ ] Retune the pause between battle actions once attack animations exist
-- [ ] Critical hits double the meter gained from getting hit; enemies get a very low crit chance
+- [x] Critical hits double the meter gained from getting hit; enemies get a very low crit chance
+- [ ] Critical hit icon or effect instead of just a message
 - [ ] Elite enemies: a skill meter and a special that hits for about 1.3x damage
 - [ ] Bosses: a meter and their own unique special attack
 - [ ] Meter full: lightning effect, and move the meter bar next to the character portrait

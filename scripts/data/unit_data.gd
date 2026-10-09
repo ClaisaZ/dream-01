@@ -17,8 +17,9 @@ extends Resource
 @export var mag: int = 10
 
 @export_group("Hidden")
-## Base crit chance (0.05 = 5%). Hidden from the player; rises as HP drops.
-@export_range(0.0, 1.0, 0.01) var base_crit_chance: float = 0.05
+## Base crit chance (0.10 = 10%). Hidden from the player. For party members it
+## rises as HP drops (see BattleRules). Enemies usually use a low 0.03.
+@export_range(0.0, 1.0, 0.01) var base_crit_chance: float = 0.10
 
 @export_group("Skill Meter")
 ## On for party members, elites, and bosses. Basic enemies leave it off
