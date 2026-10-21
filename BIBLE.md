@@ -64,7 +64,7 @@ There's no running away: every battle is part of the story.
 - **Skill meter:** fills as you attack, get hit (double on a critical hit), or help a friend. When full, the special attack unlocks. Empty at the start of every battle. Elite enemies and bosses have one too.
 - **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down, Bleed and Poison (lose a little HP each round). Each lasts a few rounds and they don't stack. Attacks can cause them, so every character and monster fights a bit differently.
 - **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely. You never see the odds, but you'll know when one lands.
-- **Tag-team attacks:** two party members hitting the same enemy can team up. Each pair's team-up is unlocked by a story moment.
+- **Tag-team attacks:** when two party members hit the same enemy in a round, they might link up for a free bonus attack. It's more likely on a critical hit or when someone is low on HP. Each pair has its own tag-team, unlocked by a story moment.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
 - **Items:** one shared bag for the party. HP potion (heals 30%), meter boost, and rare potions that raise a stat forever. No revive items: a fallen party member stays out for the rest of the fight.
 - **Gear:** one weapon and one armor per character, made for that character only. Beating a boss unlocks the next upgrade in the shop.
@@ -91,6 +91,7 @@ Your writing decides what Joli and Macy draw, so the first tasks are the ones th
 **Then, for battles:**
 
 - [ ] Which story moments unlock each pair's tag-team attack
+- [ ] A name and a feel for each pair's tag-team (every pair has its own)
 - [ ] Each character's and monster's signature effect (for example, the hero's attacks cause Bleed, a snake's bite causes Poison)
 - [ ] What bosses say during fights (phase changes, reactions)
 - [ ] Scene scripts
@@ -195,7 +196,7 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Items in battle
 - [x] Critical hits
 - [x] Status effects (Stun, ATK/DEF up and down, Bleed, Poison)
-- [ ] Tag-team attacks
+- [x] Tag-team attacks
 - [ ] Smarter enemies, boss phases
 - [ ] Timed cool moves
 
@@ -225,6 +226,7 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Levels and XP: character levels, XP needed per level, XP from enemies
 - [ ] Money: rewards from battles, connect shop prices
 - [ ] Real party bag from game progress (battles use a test bag for now)
+- [ ] Unlock tag-teams from story events (a test one is always unlocked for now)
 - [ ] Back-to-back battles where HP carries over (e.g. a gauntlet before a boss)
 - [ ] Decide: can HP potions be used outside battle? (only useful if back-to-back battles exist)
 - [ ] Enemy AI settings: how smart each enemy is

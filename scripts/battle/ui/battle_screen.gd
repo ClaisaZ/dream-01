@@ -15,6 +15,8 @@ const PARTY: Array[UnitData] = [
 ]
 const ENEMY_GROUP: EnemyGroup = preload("res://data/enemy_groups/test_golem_and_slimes.tres")
 const TEST_BAG: ItemBag = preload("res://data/items/test_bag.tres")
+## Treated as unlocked until story progress exists.
+const TEST_TAG_TEAMS: Array[TagTeamData] = [preload("res://data/tag_teams/test_twin_strike.tres")]
 const TITLE_SCENE: String = "res://scenes/menus/title_screen.tscn"
 ## Retune once attack animations exist; they'll add their own time.
 const ACTION_DELAY: float = 0.8
@@ -39,6 +41,7 @@ var _title_button: Button
 func _ready() -> void:
 	_battle = Battle.new(PARTY, ENEMY_GROUP, TEST_BAG)
 	_battle.action_delay = ACTION_DELAY
+	_battle.unlocked_tag_teams = TEST_TAG_TEAMS
 	_build_layout()
 
 	_battle.round_started.connect(_on_round_started)
@@ -51,6 +54,7 @@ func _ready() -> void:
 	_battle.effect_applied.connect(_on_effect_applied)
 	_battle.effect_hp_changed.connect(_on_effect_hp_changed)
 	_battle.unit_stunned.connect(_on_unit_stunned)
+	_battle.tag_team_performed.connect(_on_tag_team_performed)
 	_battle.battle_ended.connect(_on_battle_ended)
 	_battle.run()
 
@@ -274,6 +278,11 @@ func _on_effect_hp_changed(unit: BattleUnit, effect: StatusEffect, amount: int) 
 		_message.text = "%s takes %d damage from %s" % [unit.display_name, -amount, effect.display_name]
 	else:
 		_message.text = "%s recovers %d HP from %s" % [unit.display_name, amount, effect.display_name]
+
+
+func _on_tag_team_performed(first: BattleUnit, second: BattleUnit, target: BattleUnit, tag_team: TagTeamData, damage: int) -> void:
+	_message.text = "TAG-TEAM! %s + %s: %s on %s for %d damage!" % [
+		first.display_name, second.display_name, tag_team.display_name, target.display_name, damage]
 
 
 func _on_unit_stunned(unit: BattleUnit) -> void:

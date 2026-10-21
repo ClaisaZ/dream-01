@@ -8,6 +8,8 @@ extends RefCounted
 ## submit_item), unless auto_party is on. Items come from the party's shared bag.
 ## Enemies pick a random Quick or Power attack on a random living target.
 ## Skills can cause status effects (Bleed, Poison, Stun, stat ups/downs).
+## Two unlocked partners hitting the same enemy in one round may trigger a
+## tag-team attack (at most one per round, never for enemies, fills no meter).
 
 signal round_started(round_number: int)
 ## A party member needs a choice. Answer with submit_action().
@@ -25,6 +27,7 @@ signal effect_applied(unit: BattleUnit, effect: StatusEffect)
 signal effect_hp_changed(unit: BattleUnit, effect: StatusEffect, amount: int)
 ## The unit is stunned and loses this turn.
 signal unit_stunned(unit: BattleUnit)
+signal tag_team_performed(first: BattleUnit, second: BattleUnit, target: BattleUnit, tag_team: TagTeamData, damage: int)
 signal battle_ended(party_won: bool)
 
 ## Safety stop so a bug can never loop forever.
@@ -43,6 +46,12 @@ var action_delay: float = 0.0
 
 ## This battle's own copy of the bag: Item -> count. The bag file is never changed.
 var item_counts: Dictionary[Item, int] = {}
+## Tag-teams the party has unlocked (from story progress; a test list for now).
+var unlocked_tag_teams: Array[TagTeamData] = []
+
+## This round: enemy -> party members who already hit it with an attack.
+var _hits_this_round: Dictionary[BattleUnit, Array] = {}
+var _tag_team_used_this_round: bool = false
 
 var _submitted_action: Action
 
@@ -128,6 +137,8 @@ func _run_round() -> void:
 	# Defending lasts for the round it was used in.
 	for unit: BattleUnit in party + enemies:
 		unit.set_defending(false)
+	_hits_this_round.clear()
+	_tag_team_used_this_round = false
 	round_started.emit(round_number)
 
 	var actions: Array[Action] = []
@@ -183,8 +194,63 @@ func _run_round() -> void:
 			action.target.add_meter(roundi(hit_gain))
 		_try_inflict(action)
 		await _pause()
+		if action.user.is_party:
+			await _try_tag_team(action.user, action.target, critical)
 
 	await _end_of_round_effects()
+
+
+## Called after a party member's attack. If a partner already hit the same enemy
+## this round and their tag-team is unlocked, roll the chance and, on success,
+## the tag-team fires right away. Both must be standing; at most one per round.
+func _try_tag_team(attacker: BattleUnit, target: BattleUnit, critical: bool) -> void:
+	var earlier: Array = _hits_this_round.get(target, [])
+	_hits_this_round[target] = earlier + [attacker]
+	if _tag_team_used_this_round or not target.is_alive() or not attacker.is_alive():
+		return
+	# One roll per hit, even if several partners already hit this enemy:
+	# the first standing partner with an unlocked tag-team is the one who links up.
+	for partner: BattleUnit in earlier:
+		if partner == attacker or not partner.is_alive():
+			continue
+		var tag_team: TagTeamData = _find_tag_team(partner, attacker)
+		if tag_team == null:
+			continue
+		if randf() >= _tag_team_chance(attacker, target, critical):
+			return
+		_tag_team_used_this_round = true
+		var damage: int = _tag_team_damage(partner, attacker, target, tag_team.attack)
+		tag_team_performed.emit(partner, attacker, target, tag_team, damage)
+		target.take_damage(damage)
+		_try_inflict(Action.new(attacker, tag_team.attack, target))
+		await _pause()
+		return
+
+
+func _find_tag_team(a: BattleUnit, b: BattleUnit) -> TagTeamData:
+	for tag_team: TagTeamData in unlocked_tag_teams:
+		if tag_team.is_pair(a.data, b.data):
+			return tag_team
+	return null
+
+
+func _tag_team_chance(attacker: BattleUnit, target: BattleUnit, critical: bool) -> float:
+	var chance: float = RULES.tag_team_base_chance
+	if critical:
+		chance += RULES.tag_team_crit_bonus
+	if float(attacker.current_hp) / attacker.max_hp < RULES.tag_team_low_hp_threshold:
+		chance += RULES.tag_team_low_hp_attacker_bonus
+	if float(target.current_hp) / target.max_hp < RULES.tag_team_low_hp_threshold:
+		chance += RULES.tag_team_low_hp_enemy_bonus
+	return chance
+
+
+## Uses the pair's average attack stat (MAG for magic tag-teams) with the tag-team's power.
+func _tag_team_damage(a: BattleUnit, b: BattleUnit, target: BattleUnit, attack: SkillData) -> int:
+	var magic: bool = attack.damage_type == SkillData.DamageType.MAGIC
+	var stat_a: int = a.current_mag() if magic else a.current_atk()
+	var stat_b: int = b.current_mag() if magic else b.current_atk()
+	return BattleUnit.calculate_damage(attack.power, roundi((stat_a + stat_b) / 2.0), target.effective_def())
 
 
 ## Rolls the skill's status effect chance and applies it to the target (or the

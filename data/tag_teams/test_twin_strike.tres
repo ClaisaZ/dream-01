@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TagTeamData" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/tag_team_data.gd" id="1_tag"]
+[ext_resource type="Resource" uid="uid://bofsar4d3ivj3" path="res://data/units/test_hero.tres" id="2_hero"]
+[ext_resource type="Resource" path="res://data/skills/test_twin_strike.tres" id="3_attack"]
+
+[resource]
+script = ExtResource("1_tag")
+display_name = "Twin Strike"
+description = "Two heroes strike as one. Test tag-team for the 3 Test Hero copies."
+member_a = ExtResource("2_hero")
+member_b = ExtResource("2_hero")
+attack = ExtResource("3_attack")
