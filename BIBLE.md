@@ -44,6 +44,7 @@ Each step leaves the game playable.
 - [ ] Elements (fire, water, etc.): yes or no?
 - [ ] Where and when to release
 - [ ] Who makes music and sound
+- [ ] An optional dungeon you can repeat to gain levels or items if you get stuck? It's never required, so it doesn't break "no grinding"
 
 ## How battles work
 
@@ -65,6 +66,7 @@ There's no running away: every battle is part of the story.
 - **Status effects:** Stun (skip a turn), Attack up/down, Defense up/down, Bleed and Poison (lose a little HP each round). Each lasts a few rounds and they don't stack. Attacks can cause them, so every character and monster fights a bit differently.
 - **Critical hits:** hidden lucky hits that do extra damage. More likely when a character is hurt. Enemies can crit too, but rarely. You never see the odds, but you'll know when one lands.
 - **Tag-team attacks:** when two party members hit the same enemy in a round, they might link up for a free bonus attack. It's more likely on a critical hit or when someone is low on HP. Each pair has its own tag-team, unlocked by a story moment.
+- **Smarter enemies:** every enemy has its own cleverness. Weak monsters mostly hit at random; clever ones and bosses go after hurt heroes, finish them off with a fast attack, and prefer strong attacks. Never fully predictable.
 - **Bosses:** change phases as they lose health (stronger, more attacks), warn before big attacks, and talk during the fight.
 - **Items:** one shared bag for the party. HP potion (heals 30%), meter boost, and rare potions that raise a stat forever. No revive items: a fallen party member stays out for the rest of the fight.
 - **Gear:** one weapon and one armor per character, made for that character only. Beating a boss unlocks the next upgrade in the shop.
@@ -85,7 +87,7 @@ Your writing decides what Joli and Macy draw, so the first tasks are the ones th
 
 - [ ] A short description of each character for Joli (look, outfit, colors, vibe)
 - [ ] Which expressions each character's portrait needs (happy, sad, angry...)
-- [ ] A short description of each enemy and boss for Macy
+- [ ] A short description of each enemy and boss for Macy (and how clever each one is in a fight)
 - [ ] A list of places that need backgrounds
 
 **Then, for battles:**
@@ -197,7 +199,8 @@ Music is `.ogg`, sound effects are `.wav`.
 - [x] Critical hits
 - [x] Status effects (Stun, ATK/DEF up and down, Bleed, Poison)
 - [x] Tag-team attacks
-- [ ] Smarter enemies, boss phases
+- [x] Smarter enemies
+- [ ] Boss phases
 - [ ] Timed cool moves
 
 **Main hub and menus:**
@@ -229,13 +232,16 @@ Art this needs (not assigned yet): title logo, title screen background, hub map,
 - [ ] Unlock tag-teams from story events (a test one is always unlocked for now)
 - [ ] Back-to-back battles where HP carries over (e.g. a gauntlet before a boss)
 - [ ] Decide: can HP potions be used outside battle? (only useful if back-to-back battles exist)
-- [ ] Enemy AI settings: how smart each enemy is
+- [x] Enemy AI settings: how smart each enemy is
+- [ ] Set each real enemy's cleverness once they're designed (weak monsters low, bosses high)
+- [ ] Maybe: clever enemies also go after whoever's special is almost ready, and avoid heroes who are defending
+- [ ] Optional repeatable dungeon, if the team says yes
 - [ ] Boss phases: what changes at each health threshold
 - [ ] Game progress: party levels, gear owned, items, bosses beaten, story progress (needed for saving and the shop)
 - [ ] Battle music: play the battle theme or boss theme by battle type, plus special songs for story fights
 - [ ] Default battle background when a fight doesn't set one
 - [ ] Maybe: a small high/low roll on damage (right now every hit does the same damage)
-- [ ] Smarter enemy choices (right now enemies pick a random move and target)
+- [x] Smarter enemy choices (right now enemies pick a random move and target)
 - [ ] Keyboard and controller controls in battle (right now mouse only)
 - [ ] Retune the pause between battle actions once attack animations exist
 - [x] Critical hits double the meter gained from getting hit; enemies get a very low crit chance

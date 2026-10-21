@@ -107,7 +107,7 @@ Magic skills use MAG instead of ATK. (A separate magic defense may be added late
 
 **Where effects come from:** attacks carry them, so every character and monster can feel different (e.g. the main character's attacks may cause Bleed, a snake's bite Poison). Each skill has an optional effect, a chance, and whether it hits the target or the user (self-buffs). Healer-type characters will have their own skills beyond Quick/Power; designed with Rachel once the world exists. **Passives:** a passive slot per character is planned (maybe hidden, or a small tooltip). Ask me before designing either. Test units use test-only skills (`data/skills/test_*.tres`). UI: a small placeholder icon per effect (colored square with the short name); hover for name, description, rounds left.
 
-**Enemy AI:** for the prototype, a random move on a random target. Planned: weighted randomness. Each move and target gets a score (strong attacks and low-HP targets score higher), then the enemy picks with some randomness. How "smart" each enemy is lives in its data file. Maybe later: a front/back-line formation.
+**Enemy AI:** weighted randomness: every choice gets a score and the enemy picks randomly in proportion, so it's never fully predictable. Each unit has `UnitData.ai_smartness` (0 = fully random, 1 = smartest); weak monsters low, bosses high. Party members stay at 0 (only used when tests auto-play the party). Targets: hurt targets score higher (`BattleRules.ai_low_hp_target_weight`, 4.0 = a nearly dead target is picked 4× as often at smartness 1). Attacks: if Quick alone would knock the target out, the enemy uses it with chance = smartness (Quick lands first); otherwise it leans toward Power (`BattleRules.ai_power_attack_weight`). Special: always used as soon as the meter is full. Retargeting after a target falls uses the same smart pick. Maybe later: target whoever's special is almost ready, avoid defending heroes, a front/back-line formation.
 
 **Bosses:** immune to stun, not to debuffs. Phases at HP thresholds (more attacks per round, stronger attacks, and/or party debuffs). Wind-up attacks telegraphed one round ahead. Battle dialogue via short Dialogic timelines on phase changes and reactions. Each phase is data on the boss, not new code.
 
@@ -153,5 +153,6 @@ Each step should leave the game playable.
 - Defend merged into `dev` (PR #7).
 - Items in battle merged into `dev` (PR #8). README written (carried to the next branch).
 - Critical hits (PR #9) and status effects (PR #10) merged into `dev`.
-- Working on `feature/tag-teams`.
-- Still undecided (don't assume): working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.
+- Tag-team attacks merged into `dev` (PR #11).
+- Working on `feature/enemy-ai`: smart target and attack choice done. Boss phases next.
+- Still undecided (don't assume): optional repeatable dungeon for levels/items (OK with pillar 2 only because it's never required), working title, story/characters, pixel art vs. illustrated (sets base resolution: 640×360 or 1920×1080), elements, release target.

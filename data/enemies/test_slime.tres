@@ -15,5 +15,6 @@ def = 6
 spd = 8
 mag = 0
 base_crit_chance = 0.03
+ai_smartness = 0.2
 quick_attack = ExtResource("2_quick")
 power_attack = ExtResource("3_power")

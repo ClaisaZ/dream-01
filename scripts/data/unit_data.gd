@@ -25,6 +25,12 @@ extends Resource
 ## On for bosses: Stun never lands on them. Other effects still do.
 @export var immune_to_stun: bool = false
 
+@export_group("AI")
+## How smart this unit's automatic choices are. 0 = completely random,
+## 1 = strongly prefers good choices (like finishing off a hurt target).
+## Weak monsters stay low; bosses go high. Party members leave it at 0.
+@export_range(0.0, 1.0, 0.05) var ai_smartness: float = 0.0
+
 @export_group("Skill Meter")
 ## On for party members, elites, and bosses. Basic enemies leave it off
 ## (no meter, so they never use a special attack).

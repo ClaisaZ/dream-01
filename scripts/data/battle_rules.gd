@@ -22,6 +22,15 @@ extends Resource
 ## "Low on HP" means below this share of max HP (0.3 = 30%).
 @export_range(0.0, 1.0, 0.05) var tag_team_low_hp_threshold: float = 0.3
 
+@export_group("Enemy AI")
+## How much more often the smartest enemy (smartness 1) picks a target at
+## (almost) 0 HP than one at full HP. 4.0 = four times as often. Lower
+## smartness shrinks the difference; smartness 0 picks completely at random.
+@export var ai_low_hp_target_weight: float = 4.0
+## How much more often the smartest enemy uses Power than Quick (2.0 = twice
+## as often). Doesn't apply when Quick alone would finish the target off.
+@export var ai_power_attack_weight: float = 2.0
+
 @export_group("Status Effects")
 ## Each stun a unit receives multiplies the chance of stunning it again this
 ## battle by this (0.5 = halves it every time).

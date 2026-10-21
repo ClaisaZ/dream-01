@@ -54,6 +54,7 @@ var _hits_this_round: Dictionary[BattleUnit, Array] = {}
 var _tag_team_used_this_round: bool = false
 
 var _submitted_action: Action
+var _rng := RandomNumberGenerator.new()
 
 
 ## One unit's choice for the round: a skill, or an item (then skill is null).
@@ -80,6 +81,7 @@ func _init(party_data: Array[UnitData], enemy_group: EnemyGroup, bag: ItemBag = 
 		item_counts = bag.items.duplicate()
 	for unit: BattleUnit in party + enemies:
 		unit.died.connect(_on_unit_died)
+	_rng.randomize()
 
 
 ## Plays the whole battle until one side is defeated.
@@ -180,7 +182,7 @@ func _run_round() -> void:
 			continue
 		# If the chosen target already fell this round, hit someone else on that side.
 		if not action.target.is_alive():
-			action.target = _random_alive(_opponents_of(action.user))
+			action.target = _choose_target(action.user, _opponents_of(action.user))
 		var critical: bool = randf() < action.user.crit_chance()
 		var multiplier: float = RULES.crit_damage_multiplier if critical else 1.0
 		var damage: int = action.user.damage_against(action.target, action.skill, multiplier)
@@ -307,17 +309,35 @@ func _use_item(action: Action) -> void:
 	item_used.emit(action.user, action.target, action.item, amount)
 
 
-## Prototype choice: the special as soon as the meter is full, otherwise a
-## random Quick/Power attack. Always a random living target.
+## Automatic choice for enemies (and the party in tests): the special as soon as
+## the meter is full, otherwise Quick or Power. Target and attack depend on the
+## unit's smartness.
 func _choose_action(unit: BattleUnit) -> Action:
-	var target: BattleUnit = _random_alive(_opponents_of(unit))
+	var target: BattleUnit = _choose_target(unit, _opponents_of(unit))
 	if unit.can_use(unit.data.special_attack):
 		return Action.new(unit, unit.data.special_attack, target)
-	var skills: Array[SkillData] = []
-	for skill: SkillData in [unit.data.quick_attack, unit.data.power_attack]:
-		if skill != null:
-			skills.append(skill)
-	return Action.new(unit, skills.pick_random(), target)
+	return Action.new(unit, _choose_attack(unit, target), target)
+
+
+## Quick or Power. If Quick alone would knock the target out, a smart unit
+## (chance = smartness) uses it, since Quick lands before the target can act.
+## Otherwise a weighted pick that leans toward Power the smarter the unit is.
+func _choose_attack(unit: BattleUnit, target: BattleUnit) -> SkillData:
+	var quick: SkillData = unit.data.quick_attack
+	var power: SkillData = unit.data.power_attack
+	if quick == null or power == null:
+		return power if quick == null else quick
+	var smartness: float = unit.data.ai_smartness
+	if unit.damage_against(target, quick) >= target.current_hp and _rng.randf() < smartness:
+		return quick
+	var weights := PackedFloat32Array([1.0, _ai_weight(smartness, RULES.ai_power_attack_weight, 1.0)])
+	return power if _rng.rand_weighted(weights) == 1 else quick
+
+
+## A choice's weight for a weighted pick: 1 for a dumb unit (smartness 0), up to
+## max_weight for the smartest one when the choice is as good as it gets (share 1).
+func _ai_weight(smartness: float, max_weight: float, share: float) -> float:
+	return 1.0 + smartness * (max_weight - 1.0) * share
 
 
 ## Turn order: higher priority first, then higher SPD, then the party wins ties.
@@ -339,8 +359,18 @@ func _opponents_of(unit: BattleUnit) -> Array[BattleUnit]:
 	return enemies if unit.is_party else party
 
 
-func _random_alive(units: Array[BattleUnit]) -> BattleUnit:
-	return units.filter(func(u: BattleUnit) -> bool: return u.is_alive()).pick_random()
+## Weighted random pick of a living target: every target has a chance, but hurt
+## ones are more likely the smarter the chooser is (smartness 0 = fully random).
+func _choose_target(chooser: BattleUnit, units: Array[BattleUnit]) -> BattleUnit:
+	var alive: Array[BattleUnit] = []
+	var weights: PackedFloat32Array = []
+	for unit: BattleUnit in units:
+		if not unit.is_alive():
+			continue
+		var missing_hp: float = 1.0 - float(unit.current_hp) / unit.max_hp
+		alive.append(unit)
+		weights.append(_ai_weight(chooser.data.ai_smartness, RULES.ai_low_hp_target_weight, missing_hp))
+	return alive[_rng.rand_weighted(weights)]
 
 
 ## Who gets an item whose target can't take it:
